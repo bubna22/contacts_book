@@ -8,10 +8,7 @@ import com.bubna.exceptions.NoSuchContactException;
 import com.bubna.exceptions.NoSuchGroupException;
 import com.bubna.utils.Utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -60,8 +57,8 @@ class StorageOverseer {
             try {
                 FileOutputStream fos = new FileOutputStream(storageDir.getAbsolutePath() + "/" + key + ".contact");
                 contacts.get(key).serilize(fos);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                System.out.println(">>>> err while serialise contact " + key);
             }
         }
 
@@ -72,8 +69,8 @@ class StorageOverseer {
             try {
                 FileOutputStream fos = new FileOutputStream(storageDir.getAbsolutePath() + "/" + key + ".group");
                 groups.get(key).serilize(fos);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                System.out.println(">>>> err while serialise group " + key);
             }
         }
     }
@@ -118,10 +115,24 @@ class StorageOverseer {
             }
             if (fis == null) continue;
             if (path.contains(".contact")) {
-                Contact c = (Contact) Contact.deserialize(fis);
+                Contact c = null;
+                try {
+                    c = (Contact) Contact.deserialize(fis);
+                } catch (IOException e) {
+                    System.out.println("file damaged");
+                } catch (ClassNotFoundException e) {
+                    System.out.println("file format err");
+                }
                 contacts.put(c.getName(), c);
             } else if (path.contains(".group")) {
-                Group g = (Group) Group.deserialize(fis);
+                Group g = null;
+                try {
+                    g = (Group) Group.deserialize(fis);
+                } catch (IOException e) {
+                    System.out.println("file damaged");
+                } catch (ClassNotFoundException e) {
+                    System.out.println("file format err");
+                }
                 groups.put(g.getName(), g);
             }
         }
@@ -144,8 +155,8 @@ class StorageOverseer {
         contacts.put(c.getName(), c);
         try {
             c.serilize(new FileOutputStream(new File(storageDir.getAbsolutePath() + "/" + c.getName() + ".contact")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            return "file format err";
         }
         return c.getName() + " added";
     }
@@ -182,7 +193,7 @@ class StorageOverseer {
         for (int i = 0; i < keys.length; i++) {
             Contact c = contacts.get(keys[i]);
             if (g != null) {
-                if (c.getGroupName().equals(g.getName())) dataReturned.add(c);
+                if (c.getGroupName() != null && c.getGroupName().equals(g.getName())) dataReturned.add(c);
                 continue;
             }
             dataReturned.add(c);
@@ -201,8 +212,8 @@ class StorageOverseer {
         contacts.put(c.getName(), c);
         try {
             c.serilize(new FileOutputStream(new File(storageDir.getAbsolutePath() + "/" + c.getName() + ".contact")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            return ">>>> err while serialise contact " + c.getName();
         }
         return c.getName() + " edited";
     }
@@ -217,8 +228,8 @@ class StorageOverseer {
         groups.put(g.getName(), g);
         try {
             g.serilize(new FileOutputStream(new File(storageDir.getAbsolutePath() + "/" + g.getName() + ".group")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            return  ">>>> err while serialise group " + g.getName();
         }
         return g.getName() + " added";
     }
@@ -259,8 +270,8 @@ class StorageOverseer {
         groups.put(g.getName(), g);
         try {
             g.serilize(new FileOutputStream(new File(storageDir.getAbsolutePath() + "/" + g.getName() + ".group")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            return ">>>> err while serialise group " + g.getName();
         }
         return g.getName() + " edited";
     }

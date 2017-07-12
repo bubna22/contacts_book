@@ -7,26 +7,17 @@ import java.io.*;
  */
 abstract class EntityAncestor implements Serializable {
 
-    public final void serilize(FileOutputStream fos) {
-        try {
-            ObjectOutputStream ois = new ObjectOutputStream(fos);
-            ois.writeObject(this);
-            ois.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public final void serilize(FileOutputStream fos) throws IOException {
+        ObjectOutputStream ois = new ObjectOutputStream(fos);
+        ois.writeObject(this);
+        ois.close();
     }
 
-    public static Object deserialize(FileInputStream fis) {
-        try {
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            Object dataReturned = ois.readObject();
-            ois.close();
+    public static Object deserialize(FileInputStream fis) throws IOException, ClassNotFoundException {
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        Object dataReturned = ois.readObject();
+        ois.close();
 
-            return dataReturned;
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return dataReturned;
     }
 }
