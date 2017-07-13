@@ -14,31 +14,51 @@ public enum CommandController {
 
     INSTANCE;
 
+    private enum Action {
+        ADD("add new entity", null, null),
+        REM("remove entity", null, "/[entity_name]"),
+        EDIT("edit entity", null, "/[entity_name]"),
+        VIEW("view entity", null, "/[entity_name]"),
+        LIST("view all entities", null, null),
+        LIST_WITH_PARAMS("view all entities (maybe has params)", "list", "/[filter_name]"),
+        HELP("display all commands", null, null);
+
+        private String text;
+        private String simpleName;
+        private String paramBlock;
+
+        Action(String text, String simpleName, String paramBlock) {
+            this.text = text;
+            if (simpleName == null) this.simpleName = this.name();
+            else this.simpleName = simpleName;
+            this.paramBlock = paramBlock;
+        }
+    }
+
     private enum Entity {
 
-        CONTACTS_BOOK {
+        CONTACTS_BOOK(new Action[]{Action.HELP}) {
             protected String help() {
-                return "contacts_book powered by bubna\n" +
-                        "    Entities: contact, group;\n" +
-                        "    Actions: add, rem(remove) [option], edit [option], view [option], list [option(only for contact)];\n" +
-                        "    Details:\n" +
-                        "        Contact: cmd list may have filter - group name;\n" +
-                        "        Group: cmd list have no filters;\n" +
-                        "    Example commands:\n" +
-                        "        contact or group/add\n" +
-                        "        contact or group/rem/[contact/group name]\n" +
-                        "        contact or group/edit/[contact/group name]\n" +
-                        "        contact or group/view/[contact/group name]\n" +
-                        "        contact/list/[contact/group name]\n" +
-                        "        contact or group/list\n" +
-                        "Good luck! :)";
+                StringBuilder sb = new StringBuilder().append("contacts_book powered by bubna\n");
+                for (int i = 0; i < Entity.values().length; i++) {
+                    Entity e = Entity.values()[i];
+                    sb.append(" -").append(e.name().toLowerCase()).append("\n");
+                    for (int j = 0; j < e.availableActions.length; j++) {
+                        Action a = e.availableActions[j];
+                        sb.append("     --").append(a.simpleName.toLowerCase()).append(" - ").append(a.text).append("\n");
+                        sb.append("     example: ").append(e.name().toLowerCase()).append("/").append(a.simpleName.toLowerCase());
+                        if (a.paramBlock != null) sb.append(a.paramBlock);
+                        sb.append("\n");
+                    }
+                }
+                return sb.toString();
             }
 
             protected String defaultAction() {
                 return help();
             }
         },
-        CONTACT {
+        CONTACT(new Action[]{Action.ADD, Action.REM, Action.EDIT, Action.VIEW, Action.LIST_WITH_PARAMS}) {
             protected String add() throws InitException {
                 Contact c = null;
                 String option = CommandController.INSTANCE.getCommand("Name: ");
@@ -74,8 +94,7 @@ public enum CommandController {
                 String option;
                 while (true) {
                     if (!err) option = CommandController.INSTANCE.getCommand("Group: ");
-                    else option = CommandController.INSTANCE.getCommand("no such group; try again (for group = " +
-                            "null, type null, when need) \n" +
+                    else option = CommandController.INSTANCE.getCommand("no such group; try again \n" +
                             "Group: ");
 
                     if (option != null)
@@ -161,7 +180,7 @@ public enum CommandController {
                 }
             }
         },
-        GROUP {
+        GROUP(new Action[]{Action.ADD, Action.REM, Action.EDIT, Action.VIEW, Action.LIST}) {
             protected String add() throws InitException {
                 Group g = null;
                 String option = CommandController.INSTANCE.getCommand("Name: ");
@@ -233,6 +252,12 @@ public enum CommandController {
             }
         };
 
+        private Action[] availableActions = {Action.HELP};
+
+        Entity(Action[] actions) {
+            availableActions = actions;
+        }
+
         protected String add() throws InitException {
             return defaultAction();
         }
@@ -260,7 +285,7 @@ public enum CommandController {
 
     private String getCommand(String question) {
         String answer = connectable.getAnswer(question);
-        if (answer.equals("null")) return null;
+        if (answer.equals("")) return null;
         return answer;
     }
 
@@ -271,27 +296,28 @@ public enum CommandController {
     public String listen(UIConnectable connectable) throws InitException {
         this.connectable = connectable;
         String command = getCommand("");
+        if (command == null) return "no command";
         String[] split = command.split("/");
         if (split.length < 2) {
             return "incorrect command";
         }
         String who = split[0].toUpperCase();
-        String what = split[1];
+        String what = split[1].toUpperCase();
         String option = split.length < 3 ? null : split[2];
 
         try {
-            switch (what) {
-                case "add":
+            switch (Action.valueOf(what)) {
+                case ADD:
                     return Entity.valueOf(who).add();
-                case "rem":
+                case REM:
                     return Entity.valueOf(who).rem(option);
-                case "edit":
+                case EDIT:
                     return Entity.valueOf(who).edit(option);
-                case "view":
+                case VIEW:
                     return Entity.valueOf(who).view(option);
-                case "list":
+                case LIST:
                     return Entity.valueOf(who).list(option);
-                case "help":
+                case HELP:
                     return Entity.valueOf(who).help();
                 default:
                     return Entity.valueOf(who).defaultAction();

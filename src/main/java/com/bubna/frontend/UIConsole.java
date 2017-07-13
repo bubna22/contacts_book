@@ -29,7 +29,7 @@ public class UIConsole implements UIConnectable {
     @Override
     public String getAnswer(String question) {
         System.out.println(question);
-        return scanner.next();
+        return scanner.nextLine();
     }
 
     @Override
