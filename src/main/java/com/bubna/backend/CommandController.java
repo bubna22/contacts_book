@@ -296,7 +296,7 @@ public enum CommandController {
                 default:
                     return Entity.valueOf(who).defaultAction();
             }
-        } catch (NullPointerException | IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return "incorrect entity";
         }
     }
