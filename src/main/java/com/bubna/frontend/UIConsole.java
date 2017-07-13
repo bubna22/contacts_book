@@ -1,6 +1,7 @@
 package com.bubna.frontend;
 
 import com.bubna.backend.CommandController;
+import com.bubna.exceptions.InitException;
 
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -16,7 +17,12 @@ public class UIConsole implements UIConnectable {
         scanner = new Scanner(System.in);
         while (true) {
             System.out.println("input command like '[object]/[action]' (for more info input 'contacts_book/help'):");
-            System.out.println(CommandController.getInstance().listen(this));
+            try {
+                System.out.println(CommandController.INSTANCE.listen(this));
+            } catch (InitException e) {
+                System.out.println("Error while initializing; Exception message: " + e.getCustomMsg());
+                System.exit(1);
+            }
         }
     }
 

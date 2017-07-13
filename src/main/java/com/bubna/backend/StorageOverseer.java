@@ -2,10 +2,7 @@ package com.bubna.backend;
 
 import com.bubna.entities.Contact;
 import com.bubna.entities.Group;
-import com.bubna.exceptions.ContactAlreadyExistsException;
-import com.bubna.exceptions.GroupAlreadyExistsException;
-import com.bubna.exceptions.NoSuchContactException;
-import com.bubna.exceptions.NoSuchGroupException;
+import com.bubna.exceptions.*;
 import com.bubna.utils.Utils;
 
 import java.io.*;
@@ -24,18 +21,21 @@ class StorageOverseer {
 
     private static StorageOverseer singleton;
 
-    static StorageOverseer getInstance() {
+    static StorageOverseer getInstance() throws InitException {
         if (singleton == null)
-            singleton = new StorageOverseer();
+            try {
+                singleton = new StorageOverseer();
+            } catch (NoSuchRootDirException | ClassNotFoundException | IOException e) {
+                throw new InitException("storage");
+            }
 
         return singleton;
     }
 
-    private void serialize() {
+    private void serialize() throws NoSuchRootDirException, IOException {
         File root = Utils.getRootDir();
         if (root == null) {
-            System.out.println("exit");
-            System.exit(1);
+            throw new NoSuchRootDirException();
         }
 
         String[] rootContent = root.list();
@@ -54,29 +54,25 @@ class StorageOverseer {
         contacts.keySet().toArray(keys);
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
-            try {
-                FileOutputStream fos = new FileOutputStream(storageDir.getAbsolutePath() + "/" + key + ".contact");
-                contacts.get(key).serilize(fos);
-            } catch (IOException e) {
-                System.out.println(">>>> err while serialise contact " + key);
-            }
+            FileOutputStream fos = new FileOutputStream(storageDir.getAbsolutePath() + "/" + key + ".contact");
+            contacts.get(key).serilize(fos);
         }
 
         keys = new String[groups.size()];
         groups.keySet().toArray(keys);
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
-            try {
-                FileOutputStream fos = new FileOutputStream(storageDir.getAbsolutePath() + "/" + key + ".group");
-                groups.get(key).serilize(fos);
-            } catch (IOException e) {
-                System.out.println(">>>> err while serialise group " + key);
-            }
+            FileOutputStream fos = new FileOutputStream(storageDir.getAbsolutePath() + "/" + key + ".group");
+            groups.get(key).serilize(fos);
         }
     }
 
     protected void finalize() {
-        serialize();
+        try {
+            serialize();
+        } catch (NoSuchRootDirException | IOException e) {
+            e.printStackTrace();
+        }
         try {
             super.finalize();
         } catch (Throwable throwable) {
@@ -84,11 +80,10 @@ class StorageOverseer {
         }
     }
 
-    private void deserialize() {
+    private void deserialize() throws IOException, ClassNotFoundException, NoSuchRootDirException {
         File root = Utils.getRootDir();
         if (root == null) {
-            System.out.println("exit");
-            System.exit(1);
+            throw new NoSuchRootDirException();
         }
 
         String[] rootContent = root.list();
@@ -116,29 +111,17 @@ class StorageOverseer {
             if (fis == null) continue;
             if (path.contains(".contact")) {
                 Contact c = null;
-                try {
-                    c = (Contact) Contact.deserialize(fis);
-                } catch (IOException e) {
-                    System.out.println("file damaged");
-                } catch (ClassNotFoundException e) {
-                    System.out.println("file format err");
-                }
+                c = (Contact) Contact.deserialize(fis);
                 contacts.put(c.getName(), c);
             } else if (path.contains(".group")) {
                 Group g = null;
-                try {
-                    g = (Group) Group.deserialize(fis);
-                } catch (IOException e) {
-                    System.out.println("file damaged");
-                } catch (ClassNotFoundException e) {
-                    System.out.println("file format err");
-                }
+                g = (Group) Group.deserialize(fis);
                 groups.put(g.getName(), g);
             }
         }
     }
 
-    private StorageOverseer() {
+    private StorageOverseer() throws NoSuchRootDirException, IOException, ClassNotFoundException {
         contacts = new HashMap<String, Contact>();
         groups = new HashMap<String, Group>();
 
