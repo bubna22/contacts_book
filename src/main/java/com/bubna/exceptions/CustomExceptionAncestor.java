@@ -5,7 +5,7 @@ package com.bubna.exceptions;
  */
 abstract class CustomExceptionAncestor extends Exception {
 
-    private static String message = "edit me;";
+    private static String message = "add me;";
 
     public CustomExceptionAncestor(String m) {
         super(message + " " + m);

@@ -5,7 +5,9 @@ import java.io.*;
 /**
  * Created by test on 11.07.2017.
  */
-abstract class EntityAncestor implements Serializable {
+public abstract class EntityAncestor implements Serializable {
+
+    protected String name;
 
     public final void serilize(FileOutputStream fos) throws IOException {
         ObjectOutputStream ois = new ObjectOutputStream(fos);
@@ -19,5 +21,13 @@ abstract class EntityAncestor implements Serializable {
         ois.close();
 
         return dataReturned;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String toString() {
+        return super.toString();
     }
 }

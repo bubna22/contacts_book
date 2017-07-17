@@ -10,12 +10,7 @@ import java.net.URISyntaxException;
  */
 public class Utils {
 
-    public static File getRootDir() {
-        try {
-            return new File(Init.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public static File getRootDir() throws URISyntaxException {
+        return new File(Init.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
     }
 }
