@@ -42,12 +42,6 @@
     </pluginRepositories>
 
     <build>
-        <!--<sourceDirectory>C:\projects\desktop\bell_integrator_intro\contacts_book\src\main\java</sourceDirectory>
-        <scriptSourceDirectory>C:\projects\desktop\bell_integrator_intro\contacts_book\src\main\scripts</scriptSourceDirectory>
-        <testSourceDirectory>C:\projects\desktop\bell_integrator_intro\contacts_book\src\test\java</testSourceDirectory>-->
-        <outputDirectory>C:\projects\desktop\bell_integrator_intro\contacts_book\target\classes</outputDirectory>
-        <testOutputDirectory>C:\projects\desktop\bell_integrator_intro\contacts_book\target\test-classes</testOutputDirectory>
-
         <resources>
             <resource>
                 <directory>C:\projects\desktop\bell_integrator_intro\contacts_book\src\main\resources</directory>
@@ -188,7 +182,4 @@
         </plugins>
     </build>
 
-    <reporting>
-        <outputDirectory>C:\projects\desktop\bell_integrator_intro\contacts_book\target\site</outputDirectory>
-    </reporting>
 </project>

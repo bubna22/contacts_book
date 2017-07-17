@@ -35,17 +35,12 @@ public class LogView implements Observer {
 
     @Override
     public void update(Object data) {
-        ta.appendText("/*-----------next command----------*/\n");
+        ta.appendText("\n/*-----------next command----------*/\n");
         if (data instanceof String) {
             ta.appendText((String) data);
         } else if (data instanceof Exception) {
-            Exception e = (Exception)data;
-            e.printStackTrace(new PrintStream(new OutputStream() {
-                @Override
-                public void write(int b) throws IOException {
-                    ta.appendText(Character.toString((char) b));
-                }
-            }));
+            Exception e = (Exception) data;
+            ta.appendText(e.getClass().getName() + " " + (e.getMessage()!=null?e.getMessage():""));
         } else if (data instanceof ArrayList) {
             ArrayList<EntityAncestor> arrs = (ArrayList<EntityAncestor>) data;
             arrs.forEach(o -> ta.appendText(o.toString()));

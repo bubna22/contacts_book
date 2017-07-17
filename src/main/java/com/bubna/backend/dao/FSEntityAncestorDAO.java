@@ -34,14 +34,14 @@ enum FSEntityAncestorDAO implements DAO<String, EntityAncestor, File> {
         if (cached.containsKey(pk)) return cached.get(pk);
         else {
             File[] files = source.listFiles((dir, name) -> name.endsWith(pk + format));
-            if (files == null || files.length < 1) throw new NoSuchElementException();
+            if (files == null || files.length < 1) throw new NoSuchElementException("\nentity not exists");
             EntityAncestor c;
             try {
                 c = (EntityAncestor) EntityAncestor.deserialize(new FileInputStream(files[0]));
             } catch (IOException | ClassNotFoundException e) {
                 throw new InitException("init element error");
             }
-            if (!c.getName().equals(pk)) throw new NoSuchElementException();
+            if (!c.getName().equals(pk)) throw new NoSuchElementException("\nincorrect inputed name: " + c.getName());
             cached.put(pk, c);
             return c;
         }
@@ -60,7 +60,7 @@ enum FSEntityAncestorDAO implements DAO<String, EntityAncestor, File> {
     public void edit(EntityAncestor e) throws InitException, IOException {
         String pk = e.getName();
         File f = new File(source.getAbsolutePath() + "/" + pk + format);
-        if (!f.exists()) throw new InitException("init elem error");
+        if (!f.exists()) throw new InitException("\ninit error while deserializing " + f.getName());
         if (cached.containsKey(pk)) cached.put(pk, e);
         e.serilize(new FileOutputStream(f));
     }
@@ -73,14 +73,14 @@ enum FSEntityAncestorDAO implements DAO<String, EntityAncestor, File> {
             if (name.endsWith(pk + format)) return true;
             return false;
         });
-        if (files == null || files.length < 1) throw new NoSuchElementException();
+        if (files == null || files.length < 1) throw new NoSuchElementException("\nentity not exists");
         EntityAncestor c;
         try {
             c = (EntityAncestor) EntityAncestor.deserialize(new FileInputStream(files[0]));
         } catch (IOException | ClassNotFoundException e) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("\nerror while deserialize " + files[0].getName());
         }
-        if (!c.getName().equals(pk)) throw new NoSuchElementException();
+        if (!c.getName().equals(pk)) throw new NoSuchElementException("\nincorrect inputed name: " + c.getName());
         files[0].delete();
     }
 
@@ -107,7 +107,7 @@ enum FSEntityAncestorDAO implements DAO<String, EntityAncestor, File> {
                 try {
                     e = (EntityAncestor) EntityAncestor.deserialize(new FileInputStream(f));
                 } catch (IOException | ClassNotFoundException e1) {
-                    throw new InitException("init error in storage");
+                    throw new InitException("\ninit error while deserializing " + f.getName());
                 }
                 if (!p.test(e)) continue;
                 cached.put(e.getName(), e);

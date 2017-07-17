@@ -37,7 +37,8 @@ public enum CommandController {
                         try {
                             return Integer.parseInt((String) o);
                         } catch (NumberFormatException e) {
-                            throw new IncorrectInputException();
+                            throw new IncorrectInputException("\n" + o.toString() +
+                                    " not a number; var name: " + getShortName());
                         }
                     }
                     throw new IncorrectInputException();
@@ -52,7 +53,8 @@ public enum CommandController {
                         try {
                             return Integer.parseInt((String) o);
                         } catch (NumberFormatException e) {
-                            throw new IncorrectInputException();
+                            throw new IncorrectInputException("\n" + o.toString() +
+                                    " not a number; var name: " + getShortName());
                         }
                     }
                     throw new IncorrectInputException();
@@ -63,7 +65,7 @@ public enum CommandController {
             protected Class<?> availInput;
             protected String help;
 
-            private String getShortName() {
+            protected String getShortName() {
                 return shortName;
             }
 
@@ -77,12 +79,12 @@ public enum CommandController {
             }
 
             private static Variable getByShortName(String shortName) throws IncorrectInputException {
-                if (shortName.equals(NONE.getShortName())) throw new IllegalArgumentException();
+                if (shortName.equals(NONE.getShortName())) throw new IllegalArgumentException("\nno vars available");
                 for (int i = 0; i < Variable.values().length; i++) {
                     Variable v = Variable.values()[i];
                     if (shortName.equals(v.getShortName())) return v;
                 }
-                throw new IncorrectInputException();
+                throw new IncorrectInputException("\nno such variable");
             }
 
             Variable(String shortName, String helpStr, Class<?> availInput) {
@@ -117,6 +119,7 @@ public enum CommandController {
                 });
                 availableActions.put(Action.REM, new Object[]{new Object[]{Action.Variable.CONTACT_NAME}});
                 availableActions.put(Action.EDIT, new Object[] {
+                        new Object[]{Action.Variable.CONTACT_NAME, Boolean.TRUE},
                         new Object[]{Action.Variable.CONTACT_EMAIL, Boolean.FALSE},
                         new Object[]{Action.Variable.CONTACT_NUM, Boolean.FALSE},
                         new Object[]{Action.Variable.CONTACT_SKYPE, Boolean.FALSE},
@@ -135,7 +138,10 @@ public enum CommandController {
                         new Object[]{Action.Variable.GROUP_COLOR, Boolean.FALSE}
                 });
                 availableActions.put(Action.REM, new Object[]{new Object[]{Action.Variable.GROUP_NAME, Boolean.TRUE}});
-                availableActions.put(Action.EDIT, new Object[]{new Object[]{Action.Variable.GROUP_COLOR, Boolean.FALSE}});
+                availableActions.put(Action.EDIT, new Object[]{
+                        new Object[]{Action.Variable.GROUP_NAME, Boolean.TRUE},
+                        new Object[]{Action.Variable.GROUP_COLOR, Boolean.FALSE}
+                });
                 availableActions.put(Action.VIEW, new Object[]{new Object[]{Action.Variable.GROUP_NAME, Boolean.TRUE}});
                 availableActions.put(Action.LIST, new Object[]{new Object[]{Action.Variable.NONE, Boolean.FALSE}});
             }
@@ -235,7 +241,8 @@ public enum CommandController {
                 Object[] varWithState = (Object[]) varsWithState[i];
                 if (!((boolean) varWithState[1])) continue;
                 if (!inputVariables.containsKey((Action.Variable) varWithState[0])) {
-                    StorageModel.INSTANCE.applyException(new IncorrectInputException());
+                    StorageModel.INSTANCE.applyException(new IncorrectInputException("\nvariable " +
+                            ((Action.Variable) varWithState[0]).getShortName() + " not exists"));
                     return;
                 }
             }

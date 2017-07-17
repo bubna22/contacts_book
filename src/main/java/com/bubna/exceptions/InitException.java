@@ -12,10 +12,6 @@ public class InitException extends CustomExceptionAncestor {
         msg = m;
     }
 
-    public String getCustomMsg() {
-        return msg;
-    }
-
     static {
         InitException.setMessage("Initialization error;");
     }
