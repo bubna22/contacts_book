@@ -1,4 +1,4 @@
-package com.bubna.backend.dao;
+package com.bubna.dao;
 
 import com.bubna.entities.EntityAncestor;
 import com.bubna.exceptions.InitException;

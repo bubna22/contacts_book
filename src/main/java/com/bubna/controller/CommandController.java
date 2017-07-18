@@ -1,5 +1,6 @@
-package com.bubna.backend;
+package com.bubna.controller;
 
+import com.bubna.model.StorageModel;
 import com.bubna.exceptions.IncorrectInputException;
 
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public enum CommandController {
 
         private String help;
 
-        enum Variable {
+        public enum Variable {
             NONE(null, "no available args", null) {
                 protected Object parseVariable(Object o) {
                     throw new IllegalArgumentException();

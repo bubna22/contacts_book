@@ -1,19 +1,11 @@
-package com.bubna.frontend;
+package com.bubna.view;
 
-import com.bubna.backend.CommandController;
 import com.bubna.entities.EntityAncestor;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Created by test on 15.07.2017.
@@ -34,7 +26,7 @@ public class LogView implements Observer {
     }
 
     @Override
-    public void update(Object data) {
+    public void update(Observable observable, Object data) {
         ta.appendText("\n/*-----------next command----------*/\n");
         if (data instanceof String) {
             ta.appendText((String) data);

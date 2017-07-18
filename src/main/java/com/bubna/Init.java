@@ -1,9 +1,8 @@
 package com.bubna;
 
-import com.bubna.backend.CommandController;
-import com.bubna.backend.StorageModel;
-import com.bubna.frontend.LogView;
-import com.bubna.frontend.MainView;
+import com.bubna.model.StorageModel;
+import com.bubna.view.LogView;
+import com.bubna.view.MainView;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -14,9 +13,7 @@ import javafx.stage.Stage;
  */
 public class Init extends Application {
 
-    public Init() {
-
-    }
+    public Init() {}
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -25,8 +22,8 @@ public class Init extends Application {
 
         Scene scene = new Scene(root,800,400);
 
-        StorageModel.INSTANCE.registerObserver(new MainView(root));
-        StorageModel.INSTANCE.registerObserver(new LogView(root));
+        StorageModel.INSTANCE.getObservable().addObserver(new MainView(root));
+        StorageModel.INSTANCE.getObservable().addObserver(new LogView(root));
 
         root.setMinWidth(300);
         root.setPrefWidth(300);

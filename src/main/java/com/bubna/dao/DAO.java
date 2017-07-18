@@ -1,9 +1,8 @@
-package com.bubna.backend.dao;
+package com.bubna.dao;
 
 import com.bubna.exceptions.InitException;
 import com.bubna.exceptions.NoSuchElementException;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Predicate;

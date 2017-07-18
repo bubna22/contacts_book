@@ -6,7 +6,7 @@
 
 <!-- ====================================================================== -->
 <!--                                                                        -->
-<!-- Effective POM for project 'com.bubna:contacts_book:jar:1.0'            -->
+<!-- Effective POM for project 'com.bubna:contacts_book:jar:1.1'            -->
 <!--                                                                        -->
 <!-- ====================================================================== -->
 
@@ -15,6 +15,10 @@
     <groupId>com.bubna</groupId>
     <artifactId>contacts_book</artifactId>
     <version>1.1</version>
+
+    <properties>
+        <PACKET_DIR>/home/bubna/Public/projects/bell_integrator_intro/contacts_book/</PACKET_DIR>
+    </properties>
 
     <repositories>
         <repository>
@@ -44,18 +48,18 @@
     <build>
         <resources>
             <resource>
-                <directory>C:\projects\desktop\bell_integrator_intro\contacts_book\src\main\resources</directory>
+                <directory>${PACKET_DIR}src\main\resources</directory>
             </resource>
         </resources>
 
         <testResources>
             <testResource>
-                <directory>C:\projects\desktop\bell_integrator_intro\contacts_book\src\test\resources</directory>
+                <directory>${PACKET_DIR}src\test\resources</directory>
             </testResource>
         </testResources>
 
-        <directory>C:\projects\desktop\bell_integrator_intro\contacts_book\target</directory>
-        <finalName>contacts_book-1.0</finalName>
+        <directory>${PACKET_DIR}target</directory>
+        <finalName>contacts_book-1.1</finalName>
 
         <pluginManagement>
             <plugins>

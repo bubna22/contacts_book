@@ -1,9 +1,12 @@
-package com.bubna.frontend;
+package com.bubna.view;
 
-import com.bubna.backend.CommandController;
+import com.bubna.controller.CommandController;
 import com.bubna.utils.javaFX.Console;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by test on 12.07.2017.
@@ -25,7 +28,7 @@ public class MainView implements Observer {
     }
 
     @Override
-    public void update(Object data) {
+    public void update(Observable o, Object data) {
         console.setConsoleMode(false);
         if (!(data instanceof Exception)) {
             console.appendText("\n>:received message");
