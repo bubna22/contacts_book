@@ -10,8 +10,15 @@ import java.util.HashMap;
  */
 public enum CommandController {
 
+    /**
+     * CommandController; part of MVC pattern; used enum for realization of singleton
+     */
+
     INSTANCE;
 
+    /**
+     * available actions in contacts_book
+     */
     public enum Action {
         ADD("add entity"),
         REM("remove entity"),
@@ -19,8 +26,14 @@ public enum CommandController {
         VIEW("get properties of entity"),
         LIST("list entities");
 
+        /**
+         * string, which shows when "help" is calling by user
+         */
         private String help;
 
+        /**
+         * available variables for action for contacts_book
+         */
         public enum Variable {
             NONE(null, "no available args", null) {
                 protected Object parseVariable(Object o) {
@@ -62,22 +75,52 @@ public enum CommandController {
                 }
             };
 
+            /**
+             * short name for ui
+             */
             private String shortName;
+            /**
+             * available input class for variable
+             */
             protected Class<?> availInput;
+            /**
+             * string with description of Variable
+             */
             protected String help;
 
+            /**
+             * getter for short name
+             * @return shortname
+             */
             protected String getShortName() {
                 return shortName;
             }
 
+            /**
+             * called when user input "help"
+             * @return help string
+             */
             protected String help() {
                 return "Variable name: " + shortName + "; Description: " + help;
             }
 
+            /**
+             * checker of inputting value for variable
+             * @param o
+             * @return inputted obj
+             * @throws IncorrectInputException
+             */
             protected Object parseVariable(Object o) throws IncorrectInputException {
                 if (o.getClass().equals(availInput)) return o;
                 throw new IllegalArgumentException();
             }
+
+            /**
+             * static method for serching correct variable
+             * @param shortName
+             * @return correct variable
+             * @throws IncorrectInputException
+             */
 
             private static Variable getByShortName(String shortName) throws IncorrectInputException {
                 if (shortName.equals(NONE.getShortName())) throw new IllegalArgumentException("\nno vars available");
@@ -88,6 +131,12 @@ public enum CommandController {
                 throw new IncorrectInputException("\nno such variable");
             }
 
+            /**
+             * enum's constructor
+             * @param shortName
+             * @param helpStr
+             * @param availInput
+             */
             Variable(String shortName, String helpStr, Class<?> availInput) {
                 this.shortName = shortName;
                 this.help = helpStr;
@@ -95,10 +144,18 @@ public enum CommandController {
             }
         }
 
+        /**
+         * enums constructor
+         * @param helpStr
+         */
         Action(String helpStr) {
             this.help = helpStr;
         }
 
+        /**
+         * call, when user need help:)
+         * @return
+         */
         private String help() {
             return name().toLowerCase() + " - " + help;
         }
@@ -148,12 +205,25 @@ public enum CommandController {
             }
         };
 
+        /**
+         * available actions for entity with available variables
+         */
         protected HashMap<Action, Object[]> availableActions;
+
+        /**
+         * call for initilize HashMap availableActions
+         */
         protected void init() {}
         Entity() {
             init();
         }
 
+        /**
+         * check if need var for action of the entity
+         * @param e
+         * @param a
+         * @return boolean
+         */
         private static boolean needVarsForAction(Entity e, Action a) {
             Object[] varsWithState = e.availableActions.get(a);
             for (int i = 0; i < varsWithState.length; i++) {
@@ -162,17 +232,12 @@ public enum CommandController {
             }
             return true;
         }
-
-        private Action getAction(String name) throws IncorrectInputException {
-            Action a = Action.valueOf(name);
-            if (availableActions.containsKey(a)) {
-                return a;
-            } else {
-                throw new IncorrectInputException();
-            }
-        }
     }
 
+    /**
+     * method-parser of user's cmd
+     * @param command
+     */
     public void listen(String command) {
         if (command.equals("help")) {
             StringBuilder sb = new StringBuilder();

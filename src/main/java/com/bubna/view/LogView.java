@@ -13,6 +13,10 @@ import java.util.*;
 public class LogView implements Observer {
     private TextArea ta;
 
+    /**
+     * LogView constructor
+     * @param rootPane - container for TextArea ta {@link com.bubna.view.LogView}
+     */
     public LogView(BorderPane rootPane) {
         StackPane sp = new StackPane();
         ta = new TextArea();
@@ -25,6 +29,11 @@ public class LogView implements Observer {
         rootPane.setRight(sp);
     }
 
+    /**
+     * Interface Observer method; used to display info from StorageModel {@link com.bubna.model.StorageModel}
+     * @param observable
+     * @param data
+     */
     @Override
     public void update(Observable observable, Object data) {
         ta.appendText("\n/*-----------next command----------*/\n");

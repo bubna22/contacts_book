@@ -18,18 +18,31 @@ import static com.bubna.controller.CommandController.*;
 
 /**
  * Created by test on 11.07.2017.
+ * part of pattern mvc - Model; pattern Singleton used
  */
+
 public enum StorageModel {
 
     INSTANCE;
 
+    /**
+     * observaplePart instance
+     */
     private ObservablePart observable;
+
+    /**
+     * class extends Observable; i can't use object of Observable cause observable.setChanged() has protected access
+     */
     private class ObservablePart extends Observable {
         protected void setChanged() {
             super.setChanged();
         }
     }
 
+    /**
+     * get singleton of Observable part
+     * @return Observable instance
+     */
     public Observable getObservable() {
         if (observable == null)
             observable = new ObservablePart();
@@ -37,6 +50,11 @@ public enum StorageModel {
         return observable;
     }
 
+    /**
+     * make to remove duplicate code from other realization of apply
+     * @param action wich action is putted by user
+     * @param object is TransferObject between Model and View
+     */
     private void apply(Action action, EntityAncestor object) {
         DAO d = null;
         try {
@@ -75,6 +93,12 @@ public enum StorageModel {
         }
     }
 
+    /**
+     * apply action from controller; see controller{@link com.bubna.controller.CommandController}
+     * @param entity entity inputted by user
+     * @param action action inputted by user
+     * @param variables variables inputted by user
+     */
     public void apply(Entity entity,
                       Action action,
                       HashMap<Action.Variable, Object> variables) {
@@ -113,10 +137,18 @@ public enum StorageModel {
         }
     }
 
+    /**
+     * need to transfer some information from Controller and Model excepting DAO
+     * @param s some string
+     */
     public void applyString(String s) {
         getObservable().notifyObservers(s);
     }
 
+    /**
+     * need to transfer exceptions to view
+     * @param e
+     */
     public void applyException(Exception e) {
         getObservable().notifyObservers(e);
     }

@@ -9,14 +9,20 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
- * Created by test on 11.07.2017.
+ * Created by bubna on 11.07.2017.
+ *
  */
 public class Init extends Application {
 
     public Init() {}
 
+    /**
+     * start JavaFX program; create MainView and LogView
+     * @param primaryStage from superclass
+     */
+
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         BorderPane root = new BorderPane();
         primaryStage.setResizable(false);
 
