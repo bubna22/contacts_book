@@ -1,4 +1,4 @@
-package com.bubna.entities;
+package com.bubna.model.entities;
 
 import java.io.*;
 

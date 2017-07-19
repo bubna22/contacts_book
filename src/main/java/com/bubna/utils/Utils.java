@@ -11,6 +11,6 @@ import java.net.URISyntaxException;
 public class Utils {
 
     public static File getRootDir() throws URISyntaxException {
-        return new File(Init.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+        return new File(Utils.class.getResource("/storage").getFile());
     }
 }

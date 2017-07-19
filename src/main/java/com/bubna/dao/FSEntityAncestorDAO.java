@@ -1,6 +1,6 @@
 package com.bubna.dao;
 
-import com.bubna.entities.EntityAncestor;
+import com.bubna.model.entities.EntityAncestor;
 import com.bubna.exceptions.InitException;
 import com.bubna.exceptions.NoSuchElementException;
 

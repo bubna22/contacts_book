@@ -1,4 +1,4 @@
-package com.bubna.entities;
+package com.bubna.model.entities;
 
 /**
  * Created by test on 11.07.2017.

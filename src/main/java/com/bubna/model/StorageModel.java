@@ -1,10 +1,11 @@
 package com.bubna.model;
 
+import com.bubna.dao.AbstractFactory;
 import com.bubna.dao.DAO;
-import com.bubna.dao.FSDAOFactory;
-import com.bubna.entities.Contact;
-import com.bubna.entities.EntityAncestor;
-import com.bubna.entities.Group;
+import com.bubna.dao.DAOFactory;
+import com.bubna.model.entities.Contact;
+import com.bubna.model.entities.EntityAncestor;
+import com.bubna.model.entities.Group;
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
 import com.bubna.exceptions.NoSuchElementException;
@@ -57,9 +58,10 @@ public enum StorageModel {
      */
     private void apply(Action action, EntityAncestor object) {
         DAO d = null;
+        DAOFactory df = null;
         try {
-            d = FSDAOFactory.INSTANCE.getDAO(FSDAOFactory.INSTANCE.getSource(),
-                    object.getClass());
+            df = AbstractFactory.INSTANCE.getFactory(AbstractFactory.SourceType.FILE_SYSTEM);
+            d = df.getDAO(df.getSource(), object.getClass());
         } catch (InitException | URISyntaxException | IncorrectInputException e) {
             applyException(e);
             return;
@@ -112,8 +114,10 @@ public enum StorageModel {
             case CONTACT:
                 if (variables.containsKey(Action.Variable.GROUP_NAME)) {
                     DAO d;
+                    DAOFactory df;
                     try {
-                        d = FSDAOFactory.INSTANCE.getDAO(FSDAOFactory.INSTANCE.getSource(), Group.class);
+                        df = AbstractFactory.INSTANCE.getFactory(AbstractFactory.SourceType.FILE_SYSTEM);
+                        d = df.getDAO(df.getSource(), Group.class);
                     } catch (InitException | URISyntaxException | IncorrectInputException e) {
                         applyException(e);
                         return;

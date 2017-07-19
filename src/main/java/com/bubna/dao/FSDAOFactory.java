@@ -1,8 +1,8 @@
 package com.bubna.dao;
 
-import com.bubna.entities.Contact;
-import com.bubna.entities.EntityAncestor;
-import com.bubna.entities.Group;
+import com.bubna.model.entities.Contact;
+import com.bubna.model.entities.EntityAncestor;
+import com.bubna.model.entities.Group;
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
 import com.bubna.utils.Utils;
@@ -13,7 +13,7 @@ import java.net.URISyntaxException;
 /**
  * Created by test on 17.07.2017.
  */
-public enum FSDAOFactory implements DAOFactory<File> {
+enum FSDAOFactory implements DAOFactory<File> {
 
     INSTANCE;
 
@@ -29,7 +29,7 @@ public enum FSDAOFactory implements DAOFactory<File> {
 
     @Override
     public File getSource() throws InitException, URISyntaxException {
-        File f = new File(Utils.getRootDir() + "/storage");
+        File f = Utils.getRootDir();
         if (!f.exists()) f.mkdirs();
         return f;
     }

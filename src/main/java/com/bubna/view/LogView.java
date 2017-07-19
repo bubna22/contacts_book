@@ -1,6 +1,6 @@
 package com.bubna.view;
 
-import com.bubna.entities.EntityAncestor;
+import com.bubna.model.entities.EntityAncestor;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;

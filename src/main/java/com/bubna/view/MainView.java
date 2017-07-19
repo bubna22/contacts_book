@@ -1,7 +1,7 @@
 package com.bubna.view;
 
 import com.bubna.controller.CommandController;
-import com.bubna.utils.javaFX.Console;
+import com.bubna.view.javaFX.Console;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 

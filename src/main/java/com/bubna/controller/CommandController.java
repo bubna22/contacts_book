@@ -122,7 +122,7 @@ public enum CommandController {
              * @throws IncorrectInputException
              */
 
-            private static Variable getByShortName(String shortName) throws IncorrectInputException {
+            static Variable getByShortName(String shortName) throws IncorrectInputException {
                 if (shortName.equals(NONE.getShortName())) throw new IllegalArgumentException("\nno vars available");
                 for (int i = 0; i < Variable.values().length; i++) {
                     Variable v = Variable.values()[i];
@@ -156,7 +156,7 @@ public enum CommandController {
          * call, when user need help:)
          * @return
          */
-        private String help() {
+        String help() {
             return name().toLowerCase() + " - " + help;
         }
 
@@ -224,7 +224,7 @@ public enum CommandController {
          * @param a
          * @return boolean
          */
-        private static boolean needVarsForAction(Entity e, Action a) {
+        static boolean needVarsForAction(Entity e, Action a) {
             Object[] varsWithState = e.availableActions.get(a);
             for (int i = 0; i < varsWithState.length; i++) {
                 Object[] varWithState = (Object[]) varsWithState[i];
@@ -234,90 +234,19 @@ public enum CommandController {
         }
     }
 
+    private CommandHandler cmdHandler;
+
+    CommandController() {
+        cmdHandler = new HelpCommandHandler();
+        cmdHandler.setNext(new MainCommandHandler());
+    }
+
     /**
      * method-parser of user's cmd
      * @param command
      */
     public void listen(String command) {
-        if (command.equals("help")) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("--->--->example(space is separator): [Entity] [Action] [[var name] [var value]...]\n");
-
-            for (int i = 0; i < Entity.values().length; i++) {
-                Entity e = Entity.values()[i];
-                sb.append("--->").append(e.name().toLowerCase()).append("<---").append("\n");
-                Action[] keys = new Action[e.availableActions.size()];
-                e.availableActions.keySet().toArray(keys);
-                for (int j = 0; j < keys.length; j++) {
-                    Action a = keys[j];
-                    sb.append("--->--->").append(a.help()).append("\n");
-                    Object[] variablesWithState = e.availableActions.get(a);
-                    for (int k = 0; k < variablesWithState.length; k++) {
-                        Object[] variableWithState = ((Object[]) variablesWithState[k]);
-                        sb.append("--->--->--->").append(((Action.Variable)variableWithState[0]).help()).append("\n");
-                    }
-                }
-            }
-
-            StorageModel.INSTANCE.applyString(sb.toString());
-            return;
-        }
-        String[] split = command.split(" ");
-
-        if (split.length < 2) {
-            StorageModel.INSTANCE.applyException(new IncorrectInputException());
-            return;
-        }
-        String who = split[0].toUpperCase();
-        String what = split[1].toUpperCase();
-
-        Entity e = null;
-        Action a = null;
-
-        try {
-            e = Entity.valueOf(who);
-            a = Action.valueOf(what);
-        } catch (IllegalArgumentException e1) {
-            StorageModel.INSTANCE.applyException(e1);
-            return;
-        }
-
-        HashMap<Action.Variable, Object> inputVariables = new HashMap<>();
-
-        if (Entity.needVarsForAction(e, a)) {
-            for (int i = 2; i < split.length; i += 2) {
-                if (i%2 != 0) continue;
-                if (i == split.length - 1) break;
-                Action.Variable v = null;
-                try {
-                    v = Action.Variable.getByShortName(split[i]);
-                } catch (IncorrectInputException e1) {
-                    StorageModel.INSTANCE.applyException(e1);
-                    return;
-                }
-                try {
-                    inputVariables.put(v, v.parseVariable(split[i + 1]));
-                } catch (IncorrectInputException e1) {
-                    StorageModel.INSTANCE.applyException(e1);
-                    return;
-                }
-            }
-            Object[] varsWithState = e.availableActions.get(a);
-            for (int i = 0; i < varsWithState.length; i++) {
-                Object[] varWithState = (Object[]) varsWithState[i];
-                if (!((boolean) varWithState[1])) continue;
-                if (!inputVariables.containsKey((Action.Variable) varWithState[0])) {
-                    StorageModel.INSTANCE.applyException(new IncorrectInputException("\nvariable " +
-                            ((Action.Variable) varWithState[0]).getShortName() + " not exists"));
-                    return;
-                }
-            }
-        } else if (split.length > 2) {
-            StorageModel.INSTANCE.applyException(new IncorrectInputException());
-            return;
-        }
-
-        StorageModel.INSTANCE.apply(e, a, inputVariables);
+        cmdHandler.handle(command);
     }
 
 }

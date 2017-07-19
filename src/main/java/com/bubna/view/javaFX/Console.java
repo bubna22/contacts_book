@@ -1,7 +1,5 @@
-package com.bubna.utils.javaFX;
+package com.bubna.view.javaFX;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextArea;
 
 /**
