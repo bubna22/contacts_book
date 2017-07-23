@@ -1,16 +1,15 @@
 package com.bubna.controller;
 
-import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.model.StorageModel;
 
-class HelpCommandHandler implements CommandHandler {
+class HelpCoRCommandHandler implements CoRCommandHandler {
 
-    private CommandHandler next;
+    private CoRCommandHandler next;
 
-    HelpCommandHandler() {}
+    HelpCoRCommandHandler() {}
 
     @Override
-    public void setNext(CommandHandler next) {
+    public void setNext(CoRCommandHandler next) {
         this.next = next;
     }
 

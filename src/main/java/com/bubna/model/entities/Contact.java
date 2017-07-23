@@ -36,7 +36,7 @@ public class Contact extends EntityAncestor {
         return email;
     }
 
-    public int getNum() {
+    public Integer getNum() {
         return num;
     }
 

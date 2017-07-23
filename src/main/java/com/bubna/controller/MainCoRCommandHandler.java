@@ -5,14 +5,14 @@ import com.bubna.model.StorageModel;
 
 import java.util.HashMap;
 
-class MainCommandHandler implements CommandHandler {
+class MainCoRCommandHandler implements CoRCommandHandler {
 
-    private CommandHandler next;
+    private CoRCommandHandler next;
 
-    MainCommandHandler() {}
+    MainCoRCommandHandler() {}
 
     @Override
-    public void setNext(CommandHandler next) {
+    public void setNext(CoRCommandHandler next) {
         this.next = next;
     }
 

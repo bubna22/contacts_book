@@ -20,7 +20,7 @@ public class Group extends EntityAncestor {
         return sb.toString();
     }
 
-    public int getColor() {
+    public Integer getColor() {
         return color;
     }
 

@@ -51,17 +51,21 @@ public enum StorageModel {
         return observable;
     }
 
+    private DAOFactory currentFactory;
+
     /**
      * make to remove duplicate code from other realization of apply
      * @param action wich action is putted by user
      * @param object is TransferObject between Model and View
      */
     private void apply(Action action, EntityAncestor object) {
+        if (currentFactory == null) {
+            applyException(new InitException("choose factory first; see help;"));
+            return;
+        }
         DAO d = null;
-        DAOFactory df = null;
         try {
-            df = AbstractFactory.INSTANCE.getFactory(AbstractFactory.SourceType.FILE_SYSTEM);
-            d = df.getDAO(df.getSource(), object.getClass());
+            d = currentFactory.getDAO(currentFactory.getSource(), object.getClass());
         } catch (InitException | URISyntaxException | IncorrectInputException e) {
             applyException(e);
             return;
@@ -69,13 +73,13 @@ public enum StorageModel {
         try {
             switch (action) {
                 case ADD:
-                    d.add(object);
+                    d.modify(object.getName(), object);
                     break;
                 case REM:
-                    d.rem(object);
+                    d.modify(object.getName(), null);
                     break;
                 case EDIT:
-                    d.edit(object);
+                    d.modify(object.getName(), object);
                     break;
                 case LIST:
                     if (object instanceof Group)
@@ -90,7 +94,7 @@ public enum StorageModel {
                     getObservable().notifyObservers(d.get(object.getName()));
                     break;
             }
-        } catch (InitException | NoSuchElementException | IOException e) {
+        } catch (InitException | NoSuchElementException | IOException | IncorrectInputException e) {
             applyException(e);
         }
     }
@@ -105,6 +109,17 @@ public enum StorageModel {
                       Action action,
                       HashMap<Action.Variable, Object> variables) {
         switch (entity) {
+            case APP:
+                try {
+                    currentFactory =
+                            AbstractFactory.INSTANCE.getFactory(AbstractFactory.SourceType
+                                    .valueOf((String) variables.get(Action.Variable.FACTORY)));
+                } catch (InitException e) {
+                    applyException(e);
+                    return;
+                }
+                applyString("initialization is successful;");
+                return;
             case GROUP:
                 Group g = new Group(
                         (String) variables.get(Action.Variable.GROUP_NAME),
@@ -114,10 +129,8 @@ public enum StorageModel {
             case CONTACT:
                 if (variables.containsKey(Action.Variable.GROUP_NAME)) {
                     DAO d;
-                    DAOFactory df;
                     try {
-                        df = AbstractFactory.INSTANCE.getFactory(AbstractFactory.SourceType.FILE_SYSTEM);
-                        d = df.getDAO(df.getSource(), Group.class);
+                        d = currentFactory.getDAO(currentFactory.getSource(), Group.class);
                     } catch (InitException | URISyntaxException | IncorrectInputException e) {
                         applyException(e);
                         return;

@@ -16,6 +16,14 @@
     <artifactId>contacts_book</artifactId>
     <version>1.1</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+    </dependencies>
+
     <properties>
         <PACKET_DIR>/home/bubna/Public/projects/bell_integrator_intro/contacts_book/</PACKET_DIR>
     </properties>

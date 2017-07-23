@@ -1,14 +1,22 @@
 package com.bubna.dao;
 
+import com.bubna.dao.dom.DOMDAOFactory;
+import com.bubna.dao.jack.JackDAOFactory;
+import com.bubna.dao.stax.StAXDAOFactory;
+import com.bubna.exceptions.InitException;
+
 public enum AbstractFactory {
     INSTANCE;
 
     public enum SourceType {
-        FILE_SYSTEM(FSDAOFactory.INSTANCE);
+        DOM(DOMDAOFactory.INSTANCE),
+        SAX(StAXDAOFactory.INSTANCE),
+        JACK(JackDAOFactory.INSTANCE);
 
         private DAOFactory daoFactory;
 
-        private DAOFactory getDaoFactory() {
+        private DAOFactory getDaoFactory() throws InitException {
+            daoFactory.validateSource();
             return daoFactory;
         }
 
@@ -17,7 +25,7 @@ public enum AbstractFactory {
         }
     }
 
-    public DAOFactory getFactory(SourceType type) {
+    public DAOFactory getFactory(SourceType type) throws InitException {
         return type.getDaoFactory();
     }
 

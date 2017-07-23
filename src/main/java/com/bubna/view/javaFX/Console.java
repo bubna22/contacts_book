@@ -43,7 +43,7 @@ public class Console extends TextArea {
             return;
         }
 
-        //check accesses to add/delete chars in cur pos (need to simplify)
+        //check accesses to modify/delete chars in cur pos (need to simplify)
         if ((splitted.length < 2 &&
                 (current.startsWith(consoleSymbol) && ((current.length() > 2 && end > 2) ||
                         (start == 2 && start == end)))) ||

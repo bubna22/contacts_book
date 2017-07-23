@@ -13,4 +13,12 @@ public class Utils {
     public static File getRootDir() throws URISyntaxException {
         return new File(Utils.class.getResource("/storage").getFile());
     }
+
+    public static File getDataXml() throws URISyntaxException {
+        return new File(Utils.class.getResource("/storage/data.xml").getFile());
+    }
+
+    public static File getDataXsd() throws URISyntaxException {
+        return new File(Utils.class.getResource("/schemas/data.xsd").getFile());
+    }
 }

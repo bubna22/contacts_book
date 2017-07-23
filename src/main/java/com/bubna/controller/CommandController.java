@@ -1,6 +1,6 @@
 package com.bubna.controller;
 
-import com.bubna.model.StorageModel;
+import com.bubna.dao.AbstractFactory;
 import com.bubna.exceptions.IncorrectInputException;
 
 import java.util.HashMap;
@@ -20,9 +20,10 @@ public enum CommandController {
      * available actions in contacts_book
      */
     public enum Action {
-        ADD("add entity"),
+        CHANGE_FACTORY("set up factory"),
+        ADD("modify entity"),
         REM("remove entity"),
-        EDIT("add entity"),
+        EDIT("modify entity"),
         VIEW("get properties of entity"),
         LIST("list entities");
 
@@ -41,6 +42,19 @@ public enum CommandController {
                 }
                 protected String help() {
                     return help;
+                }
+            },
+            FACTORY("factory", "factory type: fs, dom, sax or jack", String.class) {
+                protected Object parseVariable(Object o) throws IncorrectInputException {
+                    if (o.getClass().equals(String.class)) {
+                        try {
+                            return AbstractFactory.SourceType.valueOf(((String) o).toUpperCase()).name();
+                        } catch (IllegalArgumentException e) {
+                            throw new IncorrectInputException("\n" + o.toString() +
+                                    " no such source type; see help; var name: " + getShortName());
+                        }
+                    }
+                    throw new IncorrectInputException();
                 }
             },
             CONTACT_NAME("cname", "contact name", String.class),
@@ -164,6 +178,14 @@ public enum CommandController {
 
     public enum Entity {
 
+        APP() {
+          protected void init() {
+              availableActions = new HashMap<>();
+              availableActions.put(Action.CHANGE_FACTORY, new Object[] {
+                      new Object[]{Action.Variable.FACTORY, Boolean.TRUE},
+              });
+          }
+        },
         CONTACT() {
             protected void init() {
                 availableActions = new HashMap<>();
@@ -175,7 +197,7 @@ public enum CommandController {
                         new Object[]{Action.Variable.CONTACT_TELEGRAM, Boolean.FALSE},
                         new Object[]{Action.Variable.GROUP_NAME, Boolean.FALSE}
                 });
-                availableActions.put(Action.REM, new Object[]{new Object[]{Action.Variable.CONTACT_NAME}});
+                availableActions.put(Action.REM, new Object[]{new Object[]{Action.Variable.CONTACT_NAME, Boolean.TRUE}});
                 availableActions.put(Action.EDIT, new Object[] {
                         new Object[]{Action.Variable.CONTACT_NAME, Boolean.TRUE},
                         new Object[]{Action.Variable.CONTACT_EMAIL, Boolean.FALSE},
@@ -234,11 +256,11 @@ public enum CommandController {
         }
     }
 
-    private CommandHandler cmdHandler;
+    private CoRCommandHandler cmdHandler;
 
     CommandController() {
-        cmdHandler = new HelpCommandHandler();
-        cmdHandler.setNext(new MainCommandHandler());
+        cmdHandler = new HelpCoRCommandHandler();
+        cmdHandler.setNext(new MainCoRCommandHandler());
     }
 
     /**
