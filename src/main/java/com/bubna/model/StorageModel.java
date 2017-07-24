@@ -1,5 +1,6 @@
 package com.bubna.model;
 
+import com.bubna.controller.CommandController;
 import com.bubna.dao.AbstractFactory;
 import com.bubna.dao.DAO;
 import com.bubna.dao.DAOFactory;
@@ -14,8 +15,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Observable;
-
-import static com.bubna.controller.CommandController.*;
 
 /**
  * Created by test on 11.07.2017.
@@ -58,7 +57,7 @@ public enum StorageModel {
      * @param action wich action is putted by user
      * @param object is TransferObject between Model and View
      */
-    private void apply(Action action, EntityAncestor object) {
+    private void apply(CommandController.Action action, EntityAncestor object) {
         if (currentFactory == null) {
             applyException(new InitException("choose factory first; see help;"));
             return;
@@ -87,7 +86,8 @@ public enum StorageModel {
                     else if (object instanceof Contact) {
                         Contact c = (Contact) object;
                         getObservable().notifyObservers(d.list(o -> (c.getGroupName() == null) ||
-                                c.getGroupName().equals(((Contact) o).getGroupName())));
+                                (((Contact) o).getGroupName() != null &&
+                                        c.getGroupName().equals(((Contact) o).getGroupName()))));
                     }
                     break;
                 case VIEW:
@@ -105,15 +105,15 @@ public enum StorageModel {
      * @param action action inputted by user
      * @param variables variables inputted by user
      */
-    public void apply(Entity entity,
-                      Action action,
-                      HashMap<Action.Variable, Object> variables) {
+    public void apply(CommandController.Entity entity,
+                      CommandController.Action action,
+                      HashMap<CommandController.Action.Variable, Object> variables) {
         switch (entity) {
             case APP:
                 try {
                     currentFactory =
                             AbstractFactory.INSTANCE.getFactory(AbstractFactory.SourceType
-                                    .valueOf((String) variables.get(Action.Variable.FACTORY)));
+                                    .valueOf((String) variables.get(CommandController.Action.Variable.FACTORY)));
                 } catch (InitException e) {
                     applyException(e);
                     return;
@@ -122,12 +122,12 @@ public enum StorageModel {
                 return;
             case GROUP:
                 Group g = new Group(
-                        (String) variables.get(Action.Variable.GROUP_NAME),
-                        (Integer) variables.get(Action.Variable.GROUP_COLOR));
+                        (String) variables.get(CommandController.Action.Variable.GROUP_NAME),
+                        (Integer) variables.get(CommandController.Action.Variable.GROUP_COLOR));
                 apply(action, g);
                 break;
             case CONTACT:
-                if (variables.containsKey(Action.Variable.GROUP_NAME)) {
+                if (variables.containsKey(CommandController.Action.Variable.GROUP_NAME)) {
                     DAO d;
                     try {
                         d = currentFactory.getDAO(currentFactory.getSource(), Group.class);
@@ -136,19 +136,19 @@ public enum StorageModel {
                         return;
                     }
                     try {
-                        d.get(variables.get(Action.Variable.GROUP_NAME));
+                        d.get(variables.get(CommandController.Action.Variable.GROUP_NAME));
                     } catch (Exception e) {
                         applyException(e);
                         return;
                     }
                 }
                 Contact c = new Contact(
-                        (String) variables.get(Action.Variable.CONTACT_NAME),
-                        (String) variables.get(Action.Variable.CONTACT_EMAIL),
-                        (Integer) variables.get(Action.Variable.CONTACT_NUM),
-                        (String) variables.get(Action.Variable.CONTACT_SKYPE),
-                        (String) variables.get(Action.Variable.CONTACT_TELEGRAM),
-                        (String) variables.get(Action.Variable.GROUP_NAME));
+                        (String) variables.get(CommandController.Action.Variable.CONTACT_NAME),
+                        (String) variables.get(CommandController.Action.Variable.CONTACT_EMAIL),
+                        (Integer) variables.get(CommandController.Action.Variable.CONTACT_NUM),
+                        (String) variables.get(CommandController.Action.Variable.CONTACT_SKYPE),
+                        (String) variables.get(CommandController.Action.Variable.CONTACT_TELEGRAM),
+                        (String) variables.get(CommandController.Action.Variable.GROUP_NAME));
                 apply(action, c);
                 break;
         }

@@ -103,23 +103,33 @@ public enum JackEntityAncestorDAO implements TemplateDAO<String, EntityAncestor,
         switch (this) {
             case CONTACT:
                 for (int i = 0; i < jackData.contacts.contact.length; i++) {
-                    com.bubna.dao.jack.Contact contact = jackData.contacts.contact[i];
-                    if (!values.containsKey(contact.cname)) continue;
-                    Contact inputContact = (Contact) values.get(contact.cname);
+                    com.bubna.dao.jack.Contact oldContact = jackData.contacts.contact[i];
+                    if (!values.containsKey(oldContact.cname)) continue;
+                    Contact inputContact = (Contact) values.get(oldContact.cname);
                     if (inputContact == null) {
                         jackData.contacts.contact[i] = null;
                         continue;
                     } else {
-                        contact = new com.bubna.dao.jack.Contact();
-                        contact.cname = inputContact.getName();
-                        contact.cemail = inputContact.getEmail();
-                        contact.cnum = inputContact.getNum();
-                        contact.cskype = inputContact.getSkype();
-                        contact.ctelegram = inputContact.getTelegram();
-                        contact.gname = inputContact.getGroupName();
-                        jackData.contacts.contact[i] = contact;
+                        com.bubna.dao.jack.Contact newContact = new com.bubna.dao.jack.Contact();
+                        newContact.cname = inputContact.getName();
+                        newContact.cemail = inputContact.getEmail()==null?
+                                oldContact.cemail==null?"":oldContact.cemail
+                                :inputContact.getEmail();
+                        newContact.cnum = inputContact.getNum()==null?
+                                oldContact.cnum==null?-1:oldContact.cnum
+                                :inputContact.getNum();
+                        newContact.cskype = inputContact.getSkype()==null?
+                                oldContact.cskype==null?"":oldContact.cskype
+                                :inputContact.getSkype();
+                        newContact.ctelegram = inputContact.getTelegram()==null?
+                                oldContact.ctelegram==null?"":oldContact.ctelegram
+                                :inputContact.getTelegram();
+                        newContact.gname = inputContact.getGroupName()==null?
+                                oldContact.gname==null?"":oldContact.gname
+                                :inputContact.getGroupName();
+                        jackData.contacts.contact[i] = newContact;
                     }
-                    values.remove(contact.cname);
+                    values.remove(oldContact.cname);
                 }
 
                 String[] keys = new String[values.size()];
@@ -147,19 +157,21 @@ public enum JackEntityAncestorDAO implements TemplateDAO<String, EntityAncestor,
                 break;
             case GROUP:
                 for (int i = 0; i < jackData.groups.group.length; i++) {
-                    com.bubna.dao.jack.Group group = jackData.groups.group[i];
-                    if (!values.containsKey(group.gname)) continue;
-                    Group inputGroup = (Group) values.get(group.gname);
+                    com.bubna.dao.jack.Group oldGroup = jackData.groups.group[i];
+                    if (!values.containsKey(oldGroup.gname)) continue;
+                    Group inputGroup = (Group) values.get(oldGroup.gname);
                     if (inputGroup == null) {
                         jackData.groups.group[i] = null;
                         continue;
                     } else {
-                        group = new com.bubna.dao.jack.Group();
-                        group.gname = inputGroup.getName();
-                        group.gcolor = inputGroup.getColor();
-                        jackData.groups.group[i] = group;
+                        com.bubna.dao.jack.Group newGroup = new com.bubna.dao.jack.Group();
+                        newGroup.gname = inputGroup.getName();
+                        newGroup.gcolor = inputGroup.getColor()==null?
+                                oldGroup.gcolor==null?-1:oldGroup.gcolor
+                                :inputGroup.getColor();
+                        jackData.groups.group[i] = newGroup;
                     }
-                    values.remove(group.gname);
+                    values.remove(oldGroup.gname);
                 }
 
                 keys = new String[values.size()];

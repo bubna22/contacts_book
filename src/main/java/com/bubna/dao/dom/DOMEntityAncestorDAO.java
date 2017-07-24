@@ -106,24 +106,38 @@ public enum DOMEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, 
         return dataReturned;
     }
 
-    private Element getNode(EntityAncestor entityAncestor) {
+    private Element getNode(EntityAncestor oldAncestor, EntityAncestor entityAncestor) {
         Element rNode = null;
         switch (this) {
             case GROUP:
                 Group inputGroup = (Group) entityAncestor;
+                Group oldGroup = (Group) oldAncestor;
                 rNode = document.createElement("group");
                 rNode.setAttribute("gname", inputGroup.getName());
-                rNode.setAttribute("gcolor", inputGroup.getColor()==null?"-1":inputGroup.getColor().toString());
+                rNode.setAttribute("gcolor", inputGroup.getColor()==null?
+                        oldGroup!=null&&oldGroup.getColor()!= null?Integer.toString(oldGroup.getColor()):"-1"
+                        :inputGroup.getColor().toString());
                 break;
             case CONTACT:
-                Contact c = (Contact) entityAncestor;
+                Contact inputContact = (Contact) entityAncestor;
+                Contact oldContact = (Contact) oldAncestor;
                 rNode = document.createElement("contact");
-                rNode.setAttribute("cname", c.getName());
-                rNode.setAttribute("cemail", c.getEmail());
-                rNode.setAttribute("cskype", c.getSkype());
-                rNode.setAttribute("cnum", c.getNum()!=null?Integer.toString(c.getNum()):"-1");
-                rNode.setAttribute("ctelegram", c.getTelegram());
-                rNode.setAttribute("gname", c.getGroupName());
+                rNode.setAttribute("cname", inputContact.getName());
+                rNode.setAttribute("cemail", inputContact.getEmail()==null?
+                        oldContact!=null&&oldContact.getEmail()!=null?oldContact.getEmail():""
+                        :inputContact.getEmail());
+                rNode.setAttribute("cskype", inputContact.getSkype()==null?
+                        oldContact!=null&&oldContact.getSkype()!=null?oldContact.getSkype():""
+                        :inputContact.getSkype());
+                rNode.setAttribute("cnum", inputContact.getNum()==null?
+                        oldContact!=null&&oldContact.getNum()!=null?Integer.toString(oldContact.getNum()):"-1"
+                        :Integer.toString(inputContact.getNum()));
+                rNode.setAttribute("ctelegram", inputContact.getTelegram()==null?
+                        oldContact!=null&&oldContact.getTelegram()!=null?oldContact.getTelegram():""
+                        :inputContact.getTelegram());
+                rNode.setAttribute("gname", inputContact.getGroupName()==null?
+                        oldContact!=null&&oldContact.getGroupName()!=null?oldContact.getGroupName():""
+                        :inputContact.getGroupName());
                 break;
         }
         return rNode;
@@ -175,17 +189,17 @@ public enum DOMEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, 
                 case CONTACT:
                     entityAncestor = new Contact(
                             n.getAttributes().getNamedItem("cname").getTextContent(),
-                            null,
-                            null,
-                            null,
-                            null,
-                            null
+                            n.getAttributes().getNamedItem("cemail").getTextContent(),
+                            new Integer(n.getAttributes().getNamedItem("cnum").getTextContent()),
+                            n.getAttributes().getNamedItem("cskype").getTextContent(),
+                            n.getAttributes().getNamedItem("ctelegram").getTextContent(),
+                            n.getAttributes().getNamedItem("gname").getTextContent()
                     );
                     break;
                 case GROUP:
                     entityAncestor = new Group(
                             n.getAttributes().getNamedItem("gname").getTextContent(),
-                            null
+                            new Integer(n.getAttributes().getNamedItem("gcolor").getTextContent())
                     );
                     break;
             }
@@ -193,7 +207,7 @@ public enum DOMEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, 
                 cNode.removeChild(n);
                 EntityAncestor inputAncestor = values.get(entityAncestor.getName());
                 if (inputAncestor == null) continue;
-                cNode.appendChild(getNode(inputAncestor));
+                cNode.appendChild(getNode(entityAncestor, inputAncestor));
                 values.remove(entityAncestor.getName());
             }
         }
@@ -204,7 +218,7 @@ public enum DOMEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, 
             EntityAncestor entityAncestor = values.get(keys[i]);
             String key = keys[i];
             if (entityAncestor == null) throw new NoSuchElementException("no elem " + key);
-            cNode.appendChild(getNode(entityAncestor));
+            cNode.appendChild(getNode(null, entityAncestor));
         }
 
         try {

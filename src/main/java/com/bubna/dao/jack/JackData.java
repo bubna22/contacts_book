@@ -4,10 +4,10 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-@JacksonXmlRootElement(localName = "data")
+@JacksonXmlRootElement(namespace = "urn:Test.Namespace", localName = "data")
 class JackData {
-    @JacksonXmlProperty(isAttribute = true)
-    String schemaLocation;
+    @JacksonXmlProperty(isAttribute = true, localName = "schemaLocation")
+    String xsdschemaLocation;
     @JacksonXmlProperty(localName = "contacts")
     Contacts contacts;
     @JacksonXmlProperty(localName = "groups")

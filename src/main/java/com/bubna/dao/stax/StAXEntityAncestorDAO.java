@@ -171,36 +171,72 @@ public enum StAXEntityAncestorDAO implements TemplateDAO<String, EntityAncestor,
                         } else {
                             switch (this) {
                                 case CONTACT:
+                                    Contact oldContact = new Contact(
+                                            se.getAttributeByName(new QName("cname")).getValue(),
+                                            se.getAttributeByName(new QName("cemail")).getValue(),
+                                            new Integer(se.getAttributeByName(new QName("cnum")).getValue()),
+                                            se.getAttributeByName(new QName("cskype")).getValue(),
+                                            se.getAttributeByName(new QName("ctelegram")).getValue(),
+                                            se.getAttributeByName(new QName("gname")).getValue()
+                                    );
                                     EntityAncestor inputAncestor = values.get(curAncestorName);
                                     values.remove(curAncestorName);
                                     if (inputAncestor == null) continue;
                                     Contact contact = (Contact) inputAncestor;
                                     writer.writeEmptyElement("", "contact", "urn:Test.Namespace");
                                     writer.writeAttribute("cname", contact.getName());
-                                    writer.writeAttribute("cemail", contact.getEmail() == null ? "" : contact.getEmail());
-                                    writer.writeAttribute("cskype", contact.getSkype() == null ? "" : contact.getSkype());
-                                    writer.writeAttribute("cnum", contact.getNum() == null ? "-1" : contact.getNum().toString());
-                                    writer.writeAttribute("ctelegram", contact.getTelegram() == null ? "" : contact.getTelegram());
-                                    writer.writeAttribute("gname", contact.getGroupName() == null ? "" : contact.getGroupName());
+                                    writer.writeAttribute("cemail",
+                                            contact.getEmail()==null?
+                                                    oldContact.getEmail()==null?"":oldContact.getEmail()
+                                                    :contact.getEmail());
+                                    writer.writeAttribute("cskype",
+                                            contact.getSkype()==null?
+                                                    oldContact.getSkype()==null?"":oldContact.getSkype()
+                                                    :contact.getSkype());
+                                    writer.writeAttribute("cnum",
+                                            contact.getNum()==null?
+                                                    oldContact.getNum()==null?"-1":Integer.toString(oldContact.getNum())
+                                                    :contact.getNum().toString());
+                                    writer.writeAttribute("ctelegram",
+                                            contact.getTelegram()==null?
+                                                    oldContact.getTelegram()==null?"":oldContact.getTelegram()
+                                                    :contact.getTelegram());
+                                    writer.writeAttribute("gname",
+                                            contact.getGroupName()==null?
+                                                    oldContact.getGroupName()==null?"":oldContact.getGroupName()
+                                                    :contact.getGroupName());
                                     continue;
                                 case GROUP:
+                                    Group oldGroup = new Group(
+                                            se.getAttributeByName(new QName("gname")).getValue(),
+                                            new Integer(se.getAttributeByName(new QName("cnum")).getValue())
+                                    );
                                     inputAncestor = values.get(curAncestorName);
                                     values.remove(curAncestorName);
                                     if (inputAncestor == null) continue;
                                     Group group = (Group) inputAncestor;
                                     writer.writeEmptyElement("", "group", "urn:Test.Namespace");
                                     writer.writeAttribute("gname", group.getName());
-                                    writer.writeAttribute("gcolor", group.getColor() == null ? "-1" : group.getColor().toString());
+                                    writer.writeAttribute("gcolor", group.getColor() == null?
+                                            oldGroup.getColor()==null?"-1":Integer.toString(oldGroup.getColor())
+                                            :group.getColor().toString());
                             }
                         }
                     } else {
                         writer.writeStartElement("", se.getName().getLocalPart(), "");
-                        Iterator<Attribute> attrs = se.getAttributes();
+                        if (curTagName.equals("data")) {
+                            writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
+                            writer.writeAttribute("xmlns", "urn:Test.Namespace");
+                            writer.writeAttribute("xsd:schemaLocation", "urn:Test.Namespace ../schemas/data.xsd");
+                        } else {
+                            Iterator<Attribute> attrs = se.getAttributes();
 
-                        while (attrs.hasNext()) {
-                            Attribute attr = attrs.next();
-                            writer.writeAttribute(attr.getName().getLocalPart(), attr.getValue());
+                            while (attrs.hasNext()) {
+                                Attribute attr = attrs.next();
+                                writer.writeAttribute(attr.getName().getLocalPart(), attr.getValue());
+                            }
                         }
+
                     }
                 } else if (event.isCharacters()) {
                     writer.writeCharacters(event.asCharacters().getData());
