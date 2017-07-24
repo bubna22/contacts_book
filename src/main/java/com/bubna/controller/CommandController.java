@@ -15,9 +15,7 @@ public class CommandController {
      */
     public enum Action {
         CHANGE_FACTORY("set up factory"),
-        ADD("modify entity"),
-        REM("remove entity"),
-        EDIT("modify entity"),
+        MODIFY("modify entity"),
         VIEW("get properties of entity"),
         LIST("list entities");
 
@@ -183,16 +181,7 @@ public class CommandController {
         CONTACT() {
             protected void init() {
                 availableActions = new HashMap<>();
-                availableActions.put(Action.ADD, new Object[] {
-                        new Object[]{Action.Variable.CONTACT_NAME, Boolean.TRUE},
-                        new Object[]{Action.Variable.CONTACT_EMAIL, Boolean.FALSE},
-                        new Object[]{Action.Variable.CONTACT_NUM, Boolean.FALSE},
-                        new Object[]{Action.Variable.CONTACT_SKYPE, Boolean.FALSE},
-                        new Object[]{Action.Variable.CONTACT_TELEGRAM, Boolean.FALSE},
-                        new Object[]{Action.Variable.GROUP_NAME, Boolean.FALSE}
-                });
-                availableActions.put(Action.REM, new Object[]{new Object[]{Action.Variable.CONTACT_NAME, Boolean.TRUE}});
-                availableActions.put(Action.EDIT, new Object[] {
+                availableActions.put(Action.MODIFY, new Object[] {
                         new Object[]{Action.Variable.CONTACT_NAME, Boolean.TRUE},
                         new Object[]{Action.Variable.CONTACT_EMAIL, Boolean.FALSE},
                         new Object[]{Action.Variable.CONTACT_NUM, Boolean.FALSE},
@@ -207,12 +196,7 @@ public class CommandController {
         GROUP() {
             protected void init() {
                 availableActions = new HashMap<>();
-                availableActions.put(Action.ADD, new Object[]{
-                        new Object[]{Action.Variable.GROUP_NAME, Boolean.TRUE},
-                        new Object[]{Action.Variable.GROUP_COLOR, Boolean.FALSE}
-                });
-                availableActions.put(Action.REM, new Object[]{new Object[]{Action.Variable.GROUP_NAME, Boolean.TRUE}});
-                availableActions.put(Action.EDIT, new Object[]{
+                availableActions.put(Action.MODIFY, new Object[]{
                         new Object[]{Action.Variable.GROUP_NAME, Boolean.TRUE},
                         new Object[]{Action.Variable.GROUP_COLOR, Boolean.FALSE}
                 });

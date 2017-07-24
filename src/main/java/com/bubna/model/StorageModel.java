@@ -52,105 +52,63 @@ public enum StorageModel {
 
     private DAOFactory currentFactory;
 
-    /**
-     * make to remove duplicate code from other realization of apply
-     * @param action wich action is putted by user
-     * @param object is TransferObject between Model and View
-     */
-    private void apply(CommandController.Action action, EntityAncestor object) {
+    public void setFactory(String factory) {
+        try {
+            currentFactory =
+                    AbstractFactory.INSTANCE.getFactory(AbstractFactory.SourceType
+                            .valueOf(factory));
+        } catch (InitException e) {
+            applyException(e);
+            return;
+        }
+        applyString("initialization is successful;");
+    }
+
+    public void modify(EntityAncestor entityAncestor) {
         if (currentFactory == null) {
             applyException(new InitException("choose factory first; see help;"));
             return;
         }
         DAO d = null;
         try {
-            d = currentFactory.getDAO(currentFactory.getSource(), object.getClass());
-        } catch (InitException | URISyntaxException | IncorrectInputException e) {
-            applyException(e);
-            return;
-        }
-        try {
-            switch (action) {
-                case ADD:
-                    d.modify(object.getName(), object);
-                    break;
-                case REM:
-                    d.modify(object.getName(), null);
-                    break;
-                case EDIT:
-                    d.modify(object.getName(), object);
-                    break;
-                case LIST:
-                    if (object instanceof Group)
-                        getObservable().notifyObservers(d.list(o -> true));
-                    else if (object instanceof Contact) {
-                        Contact c = (Contact) object;
-                        getObservable().notifyObservers(d.list(o -> (c.getGroupName() == null) ||
-                                (((Contact) o).getGroupName() != null &&
-                                        c.getGroupName().equals(((Contact) o).getGroupName()))));
-                    }
-                    break;
-                case VIEW:
-                    getObservable().notifyObservers(d.get(object.getName()));
-                    break;
-            }
-        } catch (InitException | NoSuchElementException | IOException | IncorrectInputException e) {
+            d = currentFactory.getDAO(currentFactory.getSource(), entityAncestor.getClass());
+            d.modify(entityAncestor.getName(), entityAncestor);
+        } catch (InitException | URISyntaxException | IncorrectInputException | IOException | NoSuchElementException e) {
             applyException(e);
         }
     }
 
-    /**
-     * apply action from controller; see controller{@link com.bubna.controller.CommandController}
-     * @param entity entity inputted by user
-     * @param action action inputted by user
-     * @param variables variables inputted by user
-     */
-    public void apply(CommandController.Entity entity,
-                      CommandController.Action action,
-                      HashMap<CommandController.Action.Variable, Object> variables) {
-        switch (entity) {
-            case APP:
-                try {
-                    currentFactory =
-                            AbstractFactory.INSTANCE.getFactory(AbstractFactory.SourceType
-                                    .valueOf((String) variables.get(CommandController.Action.Variable.FACTORY)));
-                } catch (InitException e) {
-                    applyException(e);
-                    return;
+    public void list(EntityAncestor entityAncestor) {
+        DAO d = null;
+        DAO d1 = null;
+        try {
+            d = currentFactory.getDAO(currentFactory.getSource(), entityAncestor.getClass());
+            if (entityAncestor instanceof Group)
+                getObservable().notifyObservers(d.list(o -> true));
+            else if (entityAncestor instanceof Contact) {
+                Contact c = (Contact) entityAncestor;
+
+                if (c.getGroupName() != null && c.getGroupName().equals("")) {
+                    d1 = currentFactory.getDAO(currentFactory.getSource(), Group.class);
+                    Group sGroup = (Group) d1.get(c.getGroupName());
                 }
-                applyString("initialization is successful;");
-                return;
-            case GROUP:
-                Group g = new Group(
-                        (String) variables.get(CommandController.Action.Variable.GROUP_NAME),
-                        (Integer) variables.get(CommandController.Action.Variable.GROUP_COLOR));
-                apply(action, g);
-                break;
-            case CONTACT:
-                if (variables.containsKey(CommandController.Action.Variable.GROUP_NAME)) {
-                    DAO d;
-                    try {
-                        d = currentFactory.getDAO(currentFactory.getSource(), Group.class);
-                    } catch (InitException | URISyntaxException | IncorrectInputException e) {
-                        applyException(e);
-                        return;
-                    }
-                    try {
-                        d.get(variables.get(CommandController.Action.Variable.GROUP_NAME));
-                    } catch (Exception e) {
-                        applyException(e);
-                        return;
-                    }
-                }
-                Contact c = new Contact(
-                        (String) variables.get(CommandController.Action.Variable.CONTACT_NAME),
-                        (String) variables.get(CommandController.Action.Variable.CONTACT_EMAIL),
-                        (Integer) variables.get(CommandController.Action.Variable.CONTACT_NUM),
-                        (String) variables.get(CommandController.Action.Variable.CONTACT_SKYPE),
-                        (String) variables.get(CommandController.Action.Variable.CONTACT_TELEGRAM),
-                        (String) variables.get(CommandController.Action.Variable.GROUP_NAME));
-                apply(action, c);
-                break;
+
+                getObservable().notifyObservers(d.list(o -> (c.getGroupName() == null) ||
+                        (((Contact) o).getGroupName() != null &&
+                                c.getGroupName().equals(((Contact) o).getGroupName()))));
+            }
+        } catch (InitException | URISyntaxException | IncorrectInputException | NoSuchElementException e) {
+            applyException(e);
+        }
+    }
+
+    public void view(EntityAncestor entityAncestor) {
+        DAO d = null;
+        try {
+            d = currentFactory.getDAO(currentFactory.getSource(), entityAncestor.getClass());
+            getObservable().notifyObservers(d.get(entityAncestor.getName()));
+        } catch (InitException | URISyntaxException | IncorrectInputException | NoSuchElementException e) {
+            applyException(e);
         }
     }
 

@@ -2,6 +2,9 @@ package com.bubna.controller;
 
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.model.StorageModel;
+import com.bubna.model.entities.Contact;
+import com.bubna.model.entities.EntityAncestor;
+import com.bubna.model.entities.Group;
 
 import java.util.HashMap;
 
@@ -72,7 +75,57 @@ class MainCoRCommandHandler implements CoRCommandHandler {
             StorageModel.INSTANCE.applyException(new IncorrectInputException());
             return;
         }
-        StorageModel.INSTANCE.apply(entity, action, inputVariables);
+
+        EntityAncestor entityAncestor = null;
+
+        switch (entity) {
+            case APP:
+                StorageModel.INSTANCE.setFactory((String) inputVariables.get(CommandController.Action.Variable.FACTORY));
+                break;
+            case CONTACT:
+                entityAncestor = new Contact(
+                        inputVariables.containsKey(CommandController.Action.Variable.CONTACT_NAME)?
+                                (String) inputVariables.get(CommandController.Action.Variable.CONTACT_NAME):
+                                null,
+                        inputVariables.containsKey(CommandController.Action.Variable.CONTACT_EMAIL)?
+                                (String) inputVariables.get(CommandController.Action.Variable.CONTACT_EMAIL):
+                                null,
+                        inputVariables.containsKey(CommandController.Action.Variable.CONTACT_NUM)?
+                                (Integer) inputVariables.get(CommandController.Action.Variable.CONTACT_NUM):
+                                null,
+                        inputVariables.containsKey(CommandController.Action.Variable.CONTACT_SKYPE)?
+                                (String) inputVariables.get(CommandController.Action.Variable.CONTACT_SKYPE):
+                                null,
+                        inputVariables.containsKey(CommandController.Action.Variable.CONTACT_TELEGRAM)?
+                                (String) inputVariables.get(CommandController.Action.Variable.CONTACT_TELEGRAM):
+                                null,
+                        inputVariables.containsKey(CommandController.Action.Variable.GROUP_NAME)?
+                                (String) inputVariables.get(CommandController.Action.Variable.GROUP_NAME):
+                                null
+                );
+                break;
+            case GROUP:
+                entityAncestor = new Group(
+                        inputVariables.containsKey(CommandController.Action.Variable.GROUP_NAME)?
+                                (String) inputVariables.get(CommandController.Action.Variable.GROUP_NAME):
+                                null,
+                        inputVariables.containsKey(CommandController.Action.Variable.GROUP_COLOR)?
+                                (Integer) inputVariables.get(CommandController.Action.Variable.GROUP_COLOR):
+                                null
+                );
+                break;
+        }
+        switch (action) {
+            case VIEW:
+                StorageModel.INSTANCE.view(entityAncestor);
+                break;
+            case LIST:
+                StorageModel.INSTANCE.list(entityAncestor);
+                break;
+            case MODIFY:
+                StorageModel.INSTANCE.modify(entityAncestor);
+                break;
+        }
         if (next == null) return;
         next.handle(cmd);
     }
