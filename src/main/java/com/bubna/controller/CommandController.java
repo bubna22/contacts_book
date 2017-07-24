@@ -8,13 +8,7 @@ import java.util.HashMap;
 /**
  * Created by test on 11.07.2017.
  */
-public enum CommandController {
-
-    /**
-     * CommandController; part of MVC pattern; used enum for realization of singleton
-     */
-
-    INSTANCE;
+public class CommandController {
 
     /**
      * available actions in contacts_book
@@ -258,7 +252,7 @@ public enum CommandController {
 
     private CoRCommandHandler cmdHandler;
 
-    CommandController() {
+    public CommandController() {
         cmdHandler = new HelpCoRCommandHandler();
         cmdHandler.setNext(new MainCoRCommandHandler());
     }

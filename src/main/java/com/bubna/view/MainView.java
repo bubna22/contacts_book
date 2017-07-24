@@ -16,7 +16,7 @@ public class MainView implements Observer {
     private Console console;
 
     public MainView(BorderPane rootPane) {
-        console = new Console(CommandController.INSTANCE::listen);
+        console = new Console(new CommandController()::listen);
 
         StackPane sp = new StackPane();
         sp.getChildren().add(console);
