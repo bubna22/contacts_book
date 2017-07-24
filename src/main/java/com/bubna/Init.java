@@ -1,5 +1,7 @@
 package com.bubna;
 
+import com.bubna.dao.AbstractFactory;
+import com.bubna.model.ObservablePart;
 import com.bubna.model.StorageModel;
 import com.bubna.view.LogView;
 import com.bubna.view.MainView;
@@ -28,8 +30,8 @@ public class Init extends Application {
 
         Scene scene = new Scene(root,800,400);
 
-        StorageModel.INSTANCE.getObservable().addObserver(new MainView(root));
-        StorageModel.INSTANCE.getObservable().addObserver(new LogView(root));
+        StorageModel.getInstance().getObservable().addObserver(new MainView(root));
+        StorageModel.getInstance().getObservable().addObserver(new LogView(root));
 
         root.setMinWidth(300);
         root.setPrefWidth(300);
@@ -40,6 +42,11 @@ public class Init extends Application {
 
     public static void main(String[] args) throws Exception {
         System.out.println("work hard, don't play");
+        String factory = args.length==0?"sax":args[0];
+        StorageModel.init(
+                AbstractFactory.INSTANCE.getFactory(AbstractFactory.SourceType.valueOf(factory.toUpperCase())),
+                new ObservablePart()
+        );
         launch(args);
     }
 

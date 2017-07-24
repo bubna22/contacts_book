@@ -5,9 +5,7 @@ import com.bubna.dao.TemplateDAO;
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
 import com.bubna.exceptions.NoSuchElementException;
-import com.bubna.model.entities.Contact;
 import com.bubna.model.entities.EntityAncestor;
-import com.bubna.model.entities.Group;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -27,16 +25,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
-public enum DOMEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, File> {
-
-    CONTACT,
-    GROUP;
+abstract class DOMEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, File> {
 
     private File source;
-    private Document document;
+    Document document;
 
     @Override
-    public DAO setUpdatedSource(File source) throws InitException {
+    public final DAO setUpdatedSource(File source) throws InitException {
         this.source = source;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
@@ -49,30 +44,13 @@ public enum DOMEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, 
     }
 
     @Override
-    public HashMap<String, EntityAncestor> read(Predicate<String> pKey, Predicate<EntityAncestor> pValue) throws InitException {
-        XPathFactory xPathfactory = XPathFactory.newInstance();
-        XPath xpath = xPathfactory.newXPath();
+    public final HashMap<String, EntityAncestor> read(Predicate<String> pKey, Predicate<EntityAncestor> pValue) throws InitException {
         HashMap<String, EntityAncestor> dataReturned = new HashMap<>();
         NodeList nl = null;
         XPathExpression expr = null;
 
-        switch (this) {
-            case GROUP:
-                try {
-                    expr = xpath.compile("data/groups/group");
-                } catch (XPathExpressionException e) {
-                    throw new InitException("");
-                }
-                break;
-            case CONTACT:
-                try {
-                    expr = xpath.compile("data/contacts/contact");
-                } catch (XPathExpressionException e) {
-                    throw new InitException("");
-                }
-                break;
-        }
         try {
+            expr = getXPath();
             nl = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             throw new InitException("");
@@ -80,25 +58,7 @@ public enum DOMEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, 
 
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
-            EntityAncestor entityAncestor = null;
-            switch (this) {
-                case CONTACT:
-                    entityAncestor = new Contact(
-                            n.getAttributes().getNamedItem("cname").getTextContent(),
-                            n.getAttributes().getNamedItem("cemail").getTextContent(),
-                            new Integer(n.getAttributes().getNamedItem("cnum").getTextContent()),
-                            n.getAttributes().getNamedItem("cskype").getTextContent(),
-                            n.getAttributes().getNamedItem("ctelegram").getTextContent(),
-                            n.getAttributes().getNamedItem("gname").getTextContent()
-                    );
-                    break;
-                case GROUP:
-                    entityAncestor = new Group(
-                            n.getAttributes().getNamedItem("gname").getTextContent(),
-                            new Integer(n.getAttributes().getNamedItem("gcolor").getTextContent())
-                    );
-                    break;
-            }
+            EntityAncestor entityAncestor = createByNode(n);
             if (pKey != null) if (!pKey.test(entityAncestor.getName())) continue;
             if (pValue != null) if (!pValue.test(entityAncestor)) continue;
             dataReturned.put(entityAncestor.getName(), entityAncestor);
@@ -106,70 +66,18 @@ public enum DOMEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, 
         return dataReturned;
     }
 
-    private Element getNode(EntityAncestor oldAncestor, EntityAncestor entityAncestor) {
-        Element rNode = null;
-        switch (this) {
-            case GROUP:
-                Group inputGroup = (Group) entityAncestor;
-                Group oldGroup = (Group) oldAncestor;
-                rNode = document.createElement("group");
-                rNode.setAttribute("gname", inputGroup.getName());
-                rNode.setAttribute("gcolor", inputGroup.getColor()==null?
-                        oldGroup!=null&&oldGroup.getColor()!= null?Integer.toString(oldGroup.getColor()):"-1"
-                        :inputGroup.getColor().toString());
-                break;
-            case CONTACT:
-                Contact inputContact = (Contact) entityAncestor;
-                Contact oldContact = (Contact) oldAncestor;
-                rNode = document.createElement("contact");
-                rNode.setAttribute("cname", inputContact.getName());
-                rNode.setAttribute("cemail", inputContact.getEmail()==null?
-                        oldContact!=null&&oldContact.getEmail()!=null?oldContact.getEmail():""
-                        :inputContact.getEmail());
-                rNode.setAttribute("cskype", inputContact.getSkype()==null?
-                        oldContact!=null&&oldContact.getSkype()!=null?oldContact.getSkype():""
-                        :inputContact.getSkype());
-                rNode.setAttribute("cnum", inputContact.getNum()==null?
-                        oldContact!=null&&oldContact.getNum()!=null?Integer.toString(oldContact.getNum()):"-1"
-                        :Integer.toString(inputContact.getNum()));
-                rNode.setAttribute("ctelegram", inputContact.getTelegram()==null?
-                        oldContact!=null&&oldContact.getTelegram()!=null?oldContact.getTelegram():""
-                        :inputContact.getTelegram());
-                rNode.setAttribute("gname", inputContact.getGroupName()==null?
-                        oldContact!=null&&oldContact.getGroupName()!=null?oldContact.getGroupName():""
-                        :inputContact.getGroupName());
-                break;
-        }
-        return rNode;
-    }
-
     @Override
-    public void write(HashMap<String, EntityAncestor> values) throws InitException, NoSuchElementException, IncorrectInputException {
-        XPathFactory xPathfactory = XPathFactory.newInstance();
-        XPath xpath = xPathfactory.newXPath();
-        NodeList nodeList = null;
-        Node cNode = null;
-        Element element;
+    public final void write(HashMap<String, EntityAncestor> values) throws InitException, NoSuchElementException, IncorrectInputException {
+        NodeList nodeList;
+        Node cNode;
         XPathExpression mExpr = null;
         XPathExpression cExpr = null;
 
-        switch (this) {
-            case GROUP:
-                try {
-                    mExpr = xpath.compile("data/groups/group");
-                    cExpr = xpath.compile("data/groups");
-                    break;
-                } catch (XPathExpressionException e) {
-                    throw new InitException(e.getMessage()==null?"":e.getMessage());
-                }
-            case CONTACT:
-                try {
-                    mExpr = xpath.compile("data/contacts/contact");
-                    cExpr = xpath.compile("data/contacts");
-                    break;
-                } catch (XPathExpressionException e) {
-                    throw new InitException(e.getMessage()==null?"":e.getMessage());
-                }
+        try {
+            mExpr = getXPath();
+            cExpr = getXPathContainer();
+        } catch (XPathExpressionException e) {
+            throw new InitException(e.getMessage()==null?"":e.getMessage());
         }
 
         try {
@@ -184,25 +92,7 @@ public enum DOMEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, 
             if (n == null || n.getAttributes() == null ||
                     n.getAttributes().getNamedItem("cname") == null ||
                     n.getAttributes().getNamedItem("gname") == null) continue;
-            EntityAncestor entityAncestor = null;
-            switch (this) {
-                case CONTACT:
-                    entityAncestor = new Contact(
-                            n.getAttributes().getNamedItem("cname").getTextContent(),
-                            n.getAttributes().getNamedItem("cemail").getTextContent(),
-                            new Integer(n.getAttributes().getNamedItem("cnum").getTextContent()),
-                            n.getAttributes().getNamedItem("cskype").getTextContent(),
-                            n.getAttributes().getNamedItem("ctelegram").getTextContent(),
-                            n.getAttributes().getNamedItem("gname").getTextContent()
-                    );
-                    break;
-                case GROUP:
-                    entityAncestor = new Group(
-                            n.getAttributes().getNamedItem("gname").getTextContent(),
-                            new Integer(n.getAttributes().getNamedItem("gcolor").getTextContent())
-                    );
-                    break;
-            }
+            EntityAncestor entityAncestor = createByNode(n);
             if (values.containsKey(entityAncestor.getName())) {
                 cNode.removeChild(n);
                 EntityAncestor inputAncestor = values.get(entityAncestor.getName());
@@ -234,4 +124,9 @@ public enum DOMEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, 
             throw new InitException("");
         }
     }
+
+    protected abstract XPathExpression getXPath() throws XPathExpressionException;
+    protected abstract XPathExpression getXPathContainer() throws XPathExpressionException;
+    protected abstract EntityAncestor createByNode(Node node);
+    protected abstract Element getNode(EntityAncestor oldAncestor, EntityAncestor curAncestor);
 }

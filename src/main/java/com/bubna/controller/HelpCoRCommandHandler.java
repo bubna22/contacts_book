@@ -35,7 +35,7 @@ class HelpCoRCommandHandler implements CoRCommandHandler {
                 }
             }
 
-            StorageModel.INSTANCE.applyString(sb.toString());
+            StorageModel.getInstance().applyString(sb.toString());
             return;
         }
         if (next == null) return;

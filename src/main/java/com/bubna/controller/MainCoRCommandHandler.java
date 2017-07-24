@@ -5,6 +5,7 @@ import com.bubna.model.StorageModel;
 import com.bubna.model.entities.Contact;
 import com.bubna.model.entities.EntityAncestor;
 import com.bubna.model.entities.Group;
+import com.bubna.utils.CustomPair;
 
 import java.util.HashMap;
 
@@ -24,7 +25,7 @@ class MainCoRCommandHandler implements CoRCommandHandler {
         String[] split = cmd.split(" ");
 
         if (split.length < 2) {
-            StorageModel.INSTANCE.applyException(new IncorrectInputException());
+            StorageModel.getInstance().applyException(new IncorrectInputException());
             return;
         }
         String who = split[0].toUpperCase();
@@ -37,7 +38,7 @@ class MainCoRCommandHandler implements CoRCommandHandler {
             entity = CommandController.Entity.valueOf(who);
             action = CommandController.Action.valueOf(what);
         } catch (IllegalArgumentException e1) {
-            StorageModel.INSTANCE.applyException(e1);
+            StorageModel.getInstance().applyException(e1);
             return;
         }
 
@@ -51,37 +52,34 @@ class MainCoRCommandHandler implements CoRCommandHandler {
                 try {
                     v = CommandController.Action.Variable.getByShortName(split[i]);
                 } catch (IncorrectInputException e1) {
-                    StorageModel.INSTANCE.applyException(e1);
+                    StorageModel.getInstance().applyException(e1);
                     return;
                 }
                 try {
                     inputVariables.put(v, v.parseVariable(split[i + 1]));
                 } catch (IncorrectInputException e1) {
-                    StorageModel.INSTANCE.applyException(e1);
+                    StorageModel.getInstance().applyException(e1);
                     return;
                 }
             }
-            Object[] varsWithState = entity.availableActions.get(action);
+            CustomPair<CommandController.Action.Variable, Boolean>[] varsWithState = entity.availableActions.get(action);
             for (int i = 0; i < varsWithState.length; i++) {
-                Object[] varWithState = (Object[]) varsWithState[i];
-                if (!((boolean) varWithState[1])) continue;
-                if (!inputVariables.containsKey((CommandController.Action.Variable) varWithState[0])) {
-                    StorageModel.INSTANCE.applyException(new IncorrectInputException("\nvariable " +
-                            ((CommandController.Action.Variable) varWithState[0]).getShortName() + " not exists"));
+                CustomPair<CommandController.Action.Variable, Boolean> varWithState = varsWithState[i];
+                if (!varWithState.getV2()) continue;
+                if (!inputVariables.containsKey(varWithState.getV1())) {
+                    StorageModel.getInstance().applyException(new IncorrectInputException("\nvariable " +
+                            varWithState.getV1().getShortName() + " not exists"));
                     return;
                 }
             }
         } else if (split.length > 2) {
-            StorageModel.INSTANCE.applyException(new IncorrectInputException());
+            StorageModel.getInstance().applyException(new IncorrectInputException());
             return;
         }
 
         EntityAncestor entityAncestor = null;
 
         switch (entity) {
-            case APP:
-                StorageModel.INSTANCE.setFactory((String) inputVariables.get(CommandController.Action.Variable.FACTORY));
-                break;
             case CONTACT:
                 entityAncestor = new Contact(
                         inputVariables.containsKey(CommandController.Action.Variable.CONTACT_NAME)?
@@ -117,13 +115,13 @@ class MainCoRCommandHandler implements CoRCommandHandler {
         }
         switch (action) {
             case VIEW:
-                StorageModel.INSTANCE.view(entityAncestor);
+                StorageModel.getInstance().view(entityAncestor);
                 break;
             case LIST:
-                StorageModel.INSTANCE.list(entityAncestor);
+                StorageModel.getInstance().list(entityAncestor);
                 break;
             case MODIFY:
-                StorageModel.INSTANCE.modify(entityAncestor);
+                StorageModel.getInstance().modify(entityAncestor);
                 break;
         }
         if (next == null) return;

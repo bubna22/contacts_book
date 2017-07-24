@@ -2,6 +2,7 @@ package com.bubna.controller;
 
 import com.bubna.dao.AbstractFactory;
 import com.bubna.exceptions.IncorrectInputException;
+import com.bubna.utils.CustomPair;
 
 import java.util.HashMap;
 
@@ -14,7 +15,6 @@ public class CommandController {
      * available actions in contacts_book
      */
     public enum Action {
-        CHANGE_FACTORY("set up factory"),
         MODIFY("modify entity"),
         VIEW("get properties of entity"),
         LIST("list entities");
@@ -34,19 +34,6 @@ public class CommandController {
                 }
                 protected String help() {
                     return help;
-                }
-            },
-            FACTORY("factory", "factory type: fs, dom, sax or jack", String.class) {
-                protected Object parseVariable(Object o) throws IncorrectInputException {
-                    if (o.getClass().equals(String.class)) {
-                        try {
-                            return AbstractFactory.SourceType.valueOf(((String) o).toUpperCase()).name();
-                        } catch (IllegalArgumentException e) {
-                            throw new IncorrectInputException("\n" + o.toString() +
-                                    " no such source type; see help; var name: " + getShortName());
-                        }
-                    }
-                    throw new IncorrectInputException();
                 }
             },
             CONTACT_NAME("cname", "contact name", String.class),
@@ -170,45 +157,37 @@ public class CommandController {
 
     public enum Entity {
 
-        APP() {
-          protected void init() {
-              availableActions = new HashMap<>();
-              availableActions.put(Action.CHANGE_FACTORY, new Object[] {
-                      new Object[]{Action.Variable.FACTORY, Boolean.TRUE},
-              });
-          }
-        },
         CONTACT() {
             protected void init() {
                 availableActions = new HashMap<>();
-                availableActions.put(Action.MODIFY, new Object[] {
-                        new Object[]{Action.Variable.CONTACT_NAME, Boolean.TRUE},
-                        new Object[]{Action.Variable.CONTACT_EMAIL, Boolean.FALSE},
-                        new Object[]{Action.Variable.CONTACT_NUM, Boolean.FALSE},
-                        new Object[]{Action.Variable.CONTACT_SKYPE, Boolean.FALSE},
-                        new Object[]{Action.Variable.CONTACT_TELEGRAM, Boolean.FALSE},
-                        new Object[]{Action.Variable.GROUP_NAME, Boolean.FALSE}
+                availableActions.put(Action.MODIFY, new CustomPair[]{
+                        new CustomPair(Action.Variable.CONTACT_NAME, Boolean.TRUE),
+                        new CustomPair(Action.Variable.CONTACT_EMAIL, Boolean.FALSE),
+                        new CustomPair(Action.Variable.CONTACT_NUM, Boolean.FALSE),
+                        new CustomPair(Action.Variable.CONTACT_SKYPE, Boolean.FALSE),
+                        new CustomPair(Action.Variable.CONTACT_TELEGRAM, Boolean.FALSE),
+                        new CustomPair(Action.Variable.GROUP_NAME, Boolean.FALSE)
                 });
-                availableActions.put(Action.VIEW, new Object[] {new Object[] {Action.Variable.CONTACT_NAME, Boolean.TRUE}});
-                availableActions.put(Action.LIST, new Object[] {new Object[] {Action.Variable.GROUP_NAME, Boolean.FALSE}});
+                availableActions.put(Action.VIEW, new CustomPair[] {new CustomPair (Action.Variable.CONTACT_NAME, Boolean.TRUE)});
+                availableActions.put(Action.LIST, new CustomPair[] {new CustomPair (Action.Variable.GROUP_NAME, Boolean.FALSE)});
             }
         },
         GROUP() {
             protected void init() {
                 availableActions = new HashMap<>();
-                availableActions.put(Action.MODIFY, new Object[]{
-                        new Object[]{Action.Variable.GROUP_NAME, Boolean.TRUE},
-                        new Object[]{Action.Variable.GROUP_COLOR, Boolean.FALSE}
+                availableActions.put(Action.MODIFY, new CustomPair[]{
+                        new CustomPair(Action.Variable.GROUP_NAME, Boolean.TRUE),
+                        new CustomPair(Action.Variable.GROUP_COLOR, Boolean.FALSE)
                 });
-                availableActions.put(Action.VIEW, new Object[]{new Object[]{Action.Variable.GROUP_NAME, Boolean.TRUE}});
-                availableActions.put(Action.LIST, new Object[]{new Object[]{Action.Variable.NONE, Boolean.FALSE}});
+                availableActions.put(Action.VIEW, new CustomPair[]{new CustomPair(Action.Variable.GROUP_NAME, Boolean.TRUE)});
+                availableActions.put(Action.LIST, new CustomPair[]{new CustomPair(Action.Variable.NONE, Boolean.FALSE)});
             }
         };
 
         /**
          * available actions for entity with available variables
          */
-        protected HashMap<Action, Object[]> availableActions;
+        protected HashMap<Action, CustomPair<Action.Variable, Boolean>[]> availableActions;
 
         /**
          * call for initilize HashMap availableActions
@@ -225,10 +204,10 @@ public class CommandController {
          * @return boolean
          */
         static boolean needVarsForAction(Entity e, Action a) {
-            Object[] varsWithState = e.availableActions.get(a);
+            CustomPair<Action.Variable, Boolean>[] varsWithState = e.availableActions.get(a);
             for (int i = 0; i < varsWithState.length; i++) {
-                Object[] varWithState = (Object[]) varsWithState[i];
-                if (varWithState[0].equals(Action.Variable.NONE)) return false;
+                CustomPair<Action.Variable, Boolean> varWithState = varsWithState[i];
+                if (varWithState.getV1().equals(Action.Variable.NONE)) return false;
             }
             return true;
         }

@@ -8,14 +8,9 @@ import com.bubna.model.entities.Contact;
 import com.bubna.model.entities.EntityAncestor;
 import com.bubna.model.entities.Group;
 import com.bubna.utils.Utils;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -34,9 +29,9 @@ public enum DOMDAOFactory implements DAOFactory<File> {
     @Override
     public DAO getDAO(File source, Class<? extends EntityAncestor> daoType) throws IncorrectInputException, InitException {
         if (daoType.equals(Contact.class)) {
-            return DOMEntityAncestorDAO.CONTACT.setUpdatedSource(source);
+            return new DOMContactDAO().setUpdatedSource(source);
         } else if (daoType.equals(Group.class)) {
-            return DOMEntityAncestorDAO.GROUP.setUpdatedSource(source);
+            return new DOMGroupDAO().setUpdatedSource(source);
         }
         throw new IncorrectInputException("Invalid format of requested data");
     }

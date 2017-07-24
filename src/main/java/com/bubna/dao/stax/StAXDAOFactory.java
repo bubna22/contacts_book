@@ -20,9 +20,6 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Created by test on 17.07.2017.
@@ -34,9 +31,9 @@ public enum StAXDAOFactory implements DAOFactory<File> {
     @Override
     public DAO getDAO(File source, Class<? extends EntityAncestor> daoType) throws IncorrectInputException {
         if (daoType.equals(Contact.class)) {
-            return StAXEntityAncestorDAO.CONTACT.setUpdatedSource(source);
+            return new StAXContactDAO().setUpdatedSource(source);
         } else if (daoType.equals(Group.class)) {
-            return StAXEntityAncestorDAO.GROUP.setUpdatedSource(source);
+            return new StAXGroupDAO().setUpdatedSource(source);
         }
         throw new IncorrectInputException("Invalid format of requested data");
     }
