@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 abstract class StAXEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, File> {
 
     protected File source;
+    protected String tag;
 
     @Override
     public DAO setUpdatedSource(File source) {
@@ -54,6 +55,7 @@ abstract class StAXEntityAncestorDAO implements TemplateDAO<String, EntityAncest
     protected abstract String getAncestorName(StartElement se);
     protected abstract void rewriteExistsElement(StartElement se, XMLStreamWriter writer, EntityAncestor inputAncestor) throws XMLStreamException;
     protected abstract void writeNewElements(String curTagName, XMLStreamWriter writer, HashMap<String, EntityAncestor> values) throws XMLStreamException, NoSuchElementException;
+    protected abstract String getTag();
 
     public HashMap<String, EntityAncestor> read(Predicate<String> pKey, Predicate<EntityAncestor> pVal) throws NoSuchElementException, InitException {
         ByteArrayInputStream inputSource = getFreshInStream();
@@ -116,7 +118,7 @@ abstract class StAXEntityAncestorDAO implements TemplateDAO<String, EntityAncest
                     StartElement se = event.asStartElement();
                     curTagName = se.getName().getLocalPart();
                     curAncestorName = getAncestorName(se);
-                    if (curTagName.equals("contact") || curTagName.equals("group")) {
+                    if (curTagName.equals(getTag())) {
                         if (!values.containsKey(curAncestorName)) {
                             writer.writeEmptyElement("", se.getName().getLocalPart(), "");
                             Iterator<Attribute> attrs = se.getAttributes();
@@ -131,7 +133,8 @@ abstract class StAXEntityAncestorDAO implements TemplateDAO<String, EntityAncest
                             rewriteExistsElement(se, writer, inputAncestor);
                         }
                     } else {
-                        writer.writeStartElement("", se.getName().getLocalPart(), "");
+                        if (curTagName.equals("contact") || curTagName.equals("group")) writer.writeEmptyElement("", se.getName().getLocalPart(), "");
+                        else writer.writeStartElement("", se.getName().getLocalPart(), "");
                         if (curTagName.equals("data")) {
                             writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
                             writer.writeAttribute("xmlns", "urn:Test.Namespace");

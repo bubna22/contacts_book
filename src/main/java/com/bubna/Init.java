@@ -3,12 +3,15 @@ package com.bubna;
 import com.bubna.dao.AbstractFactory;
 import com.bubna.model.ObservablePart;
 import com.bubna.model.StorageModel;
-import com.bubna.view.LogView;
-import com.bubna.view.MainView;
+import com.bubna.model.entities.Contact;
+import com.bubna.model.entities.Group;
+import com.bubna.view.ViewFactory;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+import java.util.Observable;
 
 /**
  * Created by bubna on 11.07.2017.
@@ -25,17 +28,18 @@ public class Init extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        BorderPane root = new BorderPane();
-        primaryStage.setResizable(false);
+        StackPane root = new StackPane();
+        primaryStage.setResizable(true);
+        primaryStage.setFullScreen(true);
 
         Scene scene = new Scene(root,800,400);
 
-        StorageModel.getInstance().getObservable().addObserver(new MainView(root));
-        StorageModel.getInstance().getObservable().addObserver(new LogView(root));
+        Observable observable = StorageModel.getInstance().getObservable();
 
-        root.setMinWidth(300);
-        root.setPrefWidth(300);
-        root.setMaxWidth(300);
+        ViewFactory.INSTANCE.Init(root);
+        ViewFactory.INSTANCE.addView(observable, Contact.class);
+        ViewFactory.INSTANCE.addView(observable, Group.class);
+
         primaryStage.setScene(scene);
         primaryStage.show();
     }

@@ -12,6 +12,10 @@ import java.util.function.Predicate;
 
 class StAXContactDAO extends StAXEntityAncestorDAO {
 
+    protected String getTag() {
+        return "contact";
+    }
+
     @Override
     protected void writeNewElements(
             String curTagName,

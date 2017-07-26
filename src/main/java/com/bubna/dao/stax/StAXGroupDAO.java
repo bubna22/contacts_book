@@ -6,11 +6,16 @@ import com.bubna.model.entities.Group;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
 class StAXGroupDAO extends StAXEntityAncestorDAO {
+
+    protected String getTag() {
+        return "group";
+    }
 
     @Override
     protected void writeNewElements(
@@ -34,9 +39,13 @@ class StAXGroupDAO extends StAXEntityAncestorDAO {
             StartElement se,
             XMLStreamWriter writer,
             EntityAncestor inputAncestor) throws XMLStreamException {
+        Attribute attribute = se.getAttributeByName(new QName("gcolor"));
+        if (attribute == null) return;
+        String color = attribute.getValue();
+        if (color == null) return;
         Group oldGroup = new Group(
                 se.getAttributeByName(new QName("gname")).getValue(),
-                new Integer(se.getAttributeByName(new QName("cnum")).getValue())
+                Integer.parseInt(color)
         );
 
         if (inputAncestor == null) return;

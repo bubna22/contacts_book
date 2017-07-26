@@ -7,7 +7,7 @@ public class Group extends EntityAncestor {
 
     private Integer color;
 
-    public Group(String name, Integer Color) {
+    public Group(String name, Integer color) {
         this.name = name;
         this.color = color;
     }

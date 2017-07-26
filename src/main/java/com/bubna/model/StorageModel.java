@@ -44,6 +44,16 @@ public class StorageModel {
         return observable;
     }
 
+    public void rem(EntityAncestor entityAncestor) {
+        DAO d = null;
+        try {
+            d = factory.getDAO(factory.getSource(), entityAncestor.getClass());
+            d.modify(entityAncestor.getName(), null);
+        } catch (InitException | URISyntaxException | IncorrectInputException | IOException | NoSuchElementException e) {
+            applyException(e);
+        }
+    }
+
     public void modify(EntityAncestor entityAncestor) {
         DAO d = null;
         try {
@@ -93,10 +103,6 @@ public class StorageModel {
      * @param e
      */
     public void applyException(Exception e) {
-        getObservable().notifyObservers(e);
-    }
-
-    public void applyString(String e) {
         getObservable().notifyObservers(e);
     }
 
