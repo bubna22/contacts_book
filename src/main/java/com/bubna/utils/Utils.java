@@ -1,7 +1,5 @@
 package com.bubna.utils;
 
-import com.bubna.Init;
-
 import java.io.File;
 import java.net.URISyntaxException;
 

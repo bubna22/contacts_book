@@ -18,17 +18,17 @@ public enum ViewFactory {
     private ContactView contactView;
     private GroupView groupView;
 
-    public void addView(Observable observable, Class<? extends EntityAncestor> eClass) {
+    public void addView(Observable observable, EntityController entityController, Class<? extends EntityAncestor> eClass) {
         if (eClass.equals(Contact.class)) {
             contactView = new ContactView("contactView");
             contactView.setContainerCSSSelector("div.col-md-7.bubna-col>div.table-responsive>table.table-hover");
-            contactView.setController(new EntityController<Contact>());
+            contactView.setController(entityController);
             contactView.setWebEngine(webEngine);
             observable.addObserver(contactView);
         } else if (eClass.equals(Group.class)) {
             groupView = new GroupView("groupView");
             groupView.setContainerCSSSelector("div.col-md-5.bubna-col>div.table-responsive>table.table-hover");
-            groupView.setController(new EntityController<Group>());
+            groupView.setController(entityController);
             groupView.setWebEngine(webEngine);
             observable.addObserver(groupView);
         }
