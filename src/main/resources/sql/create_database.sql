@@ -7,7 +7,7 @@ CREATE TABLE users (
     user_login VARCHAR(1024) UNIQUE,
     user_pass VARCHAR(1024),
     user_ip VARCHAR(20),
-    user_row_version INTEGER
+    user_row_version INTEGER DEFAULT 0
 );
 
 CREATE TABLE groups (
