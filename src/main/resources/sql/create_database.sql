@@ -1,5 +1,5 @@
-DROP SCHEMA contacts_book IF EXISTS CASCADE;
-CREATE SCHEMA contact_book;
+DROP SCHEMA IF EXISTS contacts_book CASCADE;
+CREATE SCHEMA contacts_book;
 SET SCHEMA 'contacts_book';
 
 CREATE TABLE users (

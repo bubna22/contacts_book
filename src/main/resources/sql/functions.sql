@@ -1,17 +1,17 @@
-CREATE TYPE group as (
-    group_id BIGSERIAL PRIMARY KEY,
-    group_name VARCHAR(1024) UNIQUE,
-    group_color INTEGER DEFAULT -1
+CREATE TYPE group_type AS (
+    group_id INTEGER,
+    group_name VARCHAR(1024),
+    group_color INTEGER
 );
 
-CREATE TYPE contact as (
-    contact_id BIGSERIAL PRIMARY KEY,
-    contact_name VARCHAR(1024) UNIQUE,
-    contact_email VARCHAR(1024) DEFAULT NULL,
-    contact_telegram VARCHAR(1024) DEFAULT NULL,
-    contact_num INTEGER DEFAULT -1,
-    contact_skype VARCHAR(1024) DEFAULT NULL,
-    group_id INTEGER DEFAULT -1
+CREATE TYPE contact_type AS (
+    contact_id INTEGER,
+    contact_name VARCHAR(1024),
+    contact_email VARCHAR(1024),
+    contact_telegram VARCHAR(1024),
+    contact_num INTEGER,
+    contact_skype VARCHAR(1024),
+    group_id INTEGER
 );
 
 CREATE OR REPLACE FUNCTION user_login(var_user_login VARCHAR, var_user_pass VARCHAR, var_ip VARCHAR) RETURNS BOOLEAN AS $$
@@ -27,8 +27,10 @@ BEGIN
     UPDATE users
         SET user_ip = var_ip, user_row_version = user_row_version + 1
         WHERE temp_rv = user_row_version;
-    IF FOUND THEN return TRUE;
-    ELSE return FALSE;
+    IF FOUND THEN
+        return TRUE;
+    ELSE
+        return FALSE;
     END IF;
 END;
 $$ LANGUAGE plpgsql;
