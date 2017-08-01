@@ -27,6 +27,11 @@
             <artifactId>jsoup</artifactId>
             <version>RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>RELEASE</version>
+        </dependency>
     </dependencies>
 
     <properties>

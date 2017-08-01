@@ -23,8 +23,6 @@ import java.util.Observable;
  */
 public class Init extends Application {
 
-    private static String factory;
-
     public Init() {}
 
     /**
@@ -36,13 +34,12 @@ public class Init extends Application {
     public void start(Stage primaryStage) throws InitException {
         StackPane root = new StackPane();
         primaryStage.setResizable(true);
-        primaryStage.setFullScreen(true);
 
         Scene scene = new Scene(root,800,400);
 
         ObservablePart observable = new ObservablePart();
 
-        DAOFactory daoFactory = AbstractFactory.INSTANCE.getFactory(AbstractFactory.SourceType.valueOf(factory.toUpperCase()));
+        DAOFactory daoFactory = AbstractFactory.INSTANCE.getFactory();
 
         EntityController<Contact> contactEntityController = new EntityController<>(new ContactModel(daoFactory, observable));
         EntityController<Group> groupEntityController = new EntityController<>(new GroupModel(daoFactory, observable));
@@ -57,7 +54,6 @@ public class Init extends Application {
 
     public static void main(String[] args) throws Exception {
         System.out.println("work hard, don't play");
-        factory = args.length==0?"sax":args[0];
         launch(args);
     }
 

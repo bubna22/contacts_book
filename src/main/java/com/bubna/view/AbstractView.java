@@ -28,7 +28,8 @@ abstract class AbstractView<V extends EntityAncestor> implements Viewable<V> {
     public void update(Observable o, Object arg) {
         if (!checkType(arg)) return;
         if (arg instanceof Exception) {
-            webEngine.executeScript("alert('" + arg.toString() + "')");
+//            webEngine.executeScript("alert('" + arg.toString() + "')");
+            System.out.println(arg.toString());
         } else if (arg instanceof ArrayList) {
             ArrayList<V> list = (ArrayList<V>) arg;
             for (int i = 0; i < list.size(); i++) {
