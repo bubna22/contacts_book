@@ -4,20 +4,18 @@ CREATE TYPE group_type AS (
 );
 
 CREATE TYPE contact_type AS (
-    contact_id INTEGER,
     contact_name VARCHAR(1024),
     contact_email VARCHAR(1024),
     contact_telegram VARCHAR(1024),
     contact_num INTEGER,
     contact_skype VARCHAR(1024),
-    group_id INTEGER
+    group_name VARCHAR(1024)
 );
 
 CREATE TYPE user_type AS (
     user_login VARCHAR(1024),
     user_pass VARCHAR(1024),
-    user_ip VARCHAR(20),
-    user_row_version INTEGER
+    user_ip VARCHAR(20)
 );
 
 
@@ -64,24 +62,30 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION contact_modify(var_user user_type, var_contact_name VARCHAR, var_contact contact_type) RETURNS void AS $$
 DECLARE
-    temp_contact_name VARCHAR;
-    temp_contact_id INTEGER;
-    temp_user_id INTEGER;
+temp_contact_name VARCHAR;
+temp_contact_id INTEGER;
+temp_user_id INTEGER;
 BEGIN
     IF contact IS NULL THEN RAISE EXCEPTION 'incorrect input'; END IF;
     PERFORM check_access(var_contact);
-    SELECT contacts.contact_name INTO temp_contact_name FROM contacts WHERE contacts.contact_name = var_contact.contact_name;
+    SELECT contacts.contact_name
+        INTO temp_contact_name
+        FROM contacts
+        WHERE contacts.contact_name = var_contact.contact_name;
     IF temp_contact_name IS NULL THEN
         INSERT INTO contacts (contact_name, contact_email, contact_telegram, contact_num, contact_skype, group_id)
-        values(var_contact.contact_name, var_contact.contact_email, var_contact.contact_telegram,
-        var_contact.contact_num, var_contact.contact_skype, var_contact.group_id) RETURNING contact_id INTO temp_contact_id;
-        SELECT user_id INTO temp_user_id FROM users WHERE user_login = var_user_login;
-        INSERT INTO contact_user (contact_id, user_id) values (temp_contact_id, temp_user_id);
+            values(var_contact.contact_name, var_contact.contact_email, var_contact.contact_telegram, var_contact.contact_num, var_contact.contact_skype, var_contact.group_id)
+            RETURNING contact_id INTO temp_contact_id;
+        SELECT user_id
+            INTO temp_user_id
+            FROM users
+            WHERE user_login = var_user_login;
+        INSERT INTO contact_user (contact_id, user_id)
+            values (temp_contact_id, temp_user_id);
     ELSE
         UPDATE contacts
-        SET contacts.contact_email = var_contact.contact_email, contacts.contact_telegram = var_contact.contact_telegram,
-        contacts.contact_num = var_contact.contact_num, contacts.contact_skype = var_contact.contact_skype, contacts.group_id = var_contact.group_id
-        WHERE contacts.contact_name = var_contact.contact_name;
+            SET contacts.contact_email = var_contact.contact_email, contacts.contact_telegram = var_contact.contact_telegram, contacts.contact_num = var_contact.contact_num, contacts.contact_skype = var_contact.contact_skype, contacts.group_id = var_contact.group_id
+            WHERE contacts.contact_name = var_contact.contact_name;
     END IF;
 END;
 $$ LANGUAGE plpgsql;
@@ -104,12 +108,22 @@ DECLARE
 BEGIN
     PERFORM check_access(var_user);
     FOR dataReturned IN
-        SELECT * as data FROM contacts
-            JOIN contact_user ON contact_user.contact_id = contacts.contact_id
-            JOIN users ON users.user_id = contact_user.user_id
-        LOOP
-            RETURN NEXT ROW(dataReturned);
-        END LOOP;
+        SELECT  contacts.contact_name,
+                contacts.contact_email,
+                contacts.contact_telegram,
+                contacts.contact_num,
+                contacts.contact_skype,
+                groups.group_name
+            FROM contacts
+        JOIN contact_user
+            ON contact_user.contact_id = contacts.contact_id
+        JOIN users
+            ON users.user_id = contact_user.user_id
+        JOIN groups
+            ON groups.group_id = contacts.group_id
+    LOOP
+        RETURN NEXT dataReturned;
+    END LOOP;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -165,77 +179,36 @@ $$ LANGUAGE plpgsql;
 
 -------------------------------------------
 
-CREATE OR REPLACE FUNCTION get_users_count() RETURNS INTEGER AS $$
-DECLARE
-    count INTEGER;
-BEGIN
+CREATE VIEW users_count AS
     SELECT count(*)
-        INTO count
         FROM users;
-    RETURN count;
-END;
-$$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_user_contacts_count(var_user_login VARCHAR) RETURNS INTEGER AS $$
-DECLARE
-    count INTEGER;
-BEGIN
-    SELECT count(*)
-        INTO count
+CREATE VIEW user_contacts_count AS
+    SELECT users.user_login, count(contacts.contact_id)
         FROM contacts
         JOIN contact_user ON contact_user.contact_id = contacts.contact_id
-        JOIN users ON users.user_id = contact_user.user_id AND users.user_login = var_user_login;
-    RETURN count;
-END;
-$$ LANGUAGE plpgsql;
+        JOIN users ON users.user_id = contact_user.user_id
+        GROUP BY users.user_login;
 
-CREATE OR REPLACE FUNCTION get_user_groups_count(var_user_login VARCHAR) RETURNS INTEGER AS $$
-DECLARE
-    count INTEGER;
-BEGIN
-    SELECT count(*)
-        INTO count
+CREATE VIEW user_groups_count AS
+    SELECT users.user_login, count(groups.group_id)
         FROM groups
         JOIN group_user ON group_user.group_id = groups.group_id
-        JOIN users ON users.user_id = contact_user.user_id AND users.user_login = var_user_login;
-    RETURN count;
-END;
-$$ LANGUAGE plpgsql;
+        JOIN users ON users.user_id = group_user.user_id
+        GROUP BY users.user_login;
 
-CREATE OR REPLACE FUNCTION get_avg_users_in_group_count() RETURNS INTEGER AS $$
-DECLARE
-    count INTEGER;
-BEGIN
+CREATE VIEW avg_users_in_group_count AS
     SELECT avg(count_usrs)
-        INTO count
         FROM (SELECT count(user_id) as count_usrs FROM group_user GROUP BY group_id) pr;
-    RETURN count;
-END;
-$$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_avg_contacts_by_user_count() RETURNS INTEGER AS $$
-DECLARE
-    count INTEGER;
-BEGIN
+CREATE VIEW avg_contacts_by_user_count AS
     SELECT avg(count_cntcts)
         INTO count
         FROM (SELECT count(contact_id) as count_cntcts FROM contact_user GROUP BY user_id) pr;
-    RETURN count;
-END;
-$$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_inactive_users() RETURNS SETOF user_type AS $$
-DECLARE
-    dataReturned user_type%rowtype;
-BEGIN
-    FOR dataReturned IN
-        SELECT * FROM users WHERE user_id IN (SELECT user_id FROM users
+CREATE VIEW get_inactive_users AS
+    SELECT * FROM users WHERE user_id IN (SELECT user_id FROM users
             JOIN contact_user ON contact_user.user_id = users.user_id
             GROUP BY user_id
-            HAVING count(contact_user.contact_id) < 10)
-        LOOP
-            RETURN NEXT dataReturned;
-        END LOOP;
-END;
-$$ LANGUAGE plpgsql;
+            HAVING count(contact_user.contact_id) < 10);
 

@@ -41,7 +41,7 @@ public enum DBDAOFactory implements DAOFactory<Connection> {
             connection.prepareStatement("SET SCHEMA 'contacts_book';").execute();
             return connection;
         } catch (SQLException | ClassNotFoundException e) {
-            throw new InitException("connection err");
+            throw new InitException(e.getMessage()==null?"connection err":e.getMessage());
         }
     }
 }
