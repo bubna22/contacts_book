@@ -34,6 +34,7 @@ public class Init extends Application {
     public void start(Stage primaryStage) throws InitException {
         StackPane root = new StackPane();
         primaryStage.setResizable(true);
+        primaryStage.setFullScreen(true);
 
         Scene scene = new Scene(root,800,400);
 

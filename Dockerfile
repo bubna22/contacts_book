@@ -1,5 +1,4 @@
 FROM postgres:9.5
-ADD target/contacts_book-1.1.jar /opt/contacts_book/contacts_book-1.1.jar
 RUN apt-get update
 RUN apt-get -y upgrade
 RUN apt-get dist-upgrade

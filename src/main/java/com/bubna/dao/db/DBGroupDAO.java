@@ -26,7 +26,7 @@ final class DBGroupDAO extends DBEntityAncestorDAO {
 
     @Override
     protected String getReadListFun() {
-        return "SELECT * FROM group_list( ? );";
+        return "SELECT data FROM group_list( ? ) as data;";
     }
 
     @Override

@@ -45,7 +45,7 @@ abstract class DBEntityAncestorDAO implements TemplateDAO<String, EntityAncestor
             PGobject p = new PGobject();
             p.setType("user_type");
             p.setValue("(1,bubna,,1,0)");
-            preparedStatement.setObject(1, userMap);
+            preparedStatement.setObject(1, p);
 
             dataReturned = getFromResultSet(preparedStatement.executeQuery());
         } catch (SQLException e) {

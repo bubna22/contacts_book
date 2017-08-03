@@ -39,12 +39,6 @@ public enum DBDAOFactory implements DAOFactory<Connection> {
             jdbcClassInited = true;
             Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:32768/postgres", "postgres", "");
             connection.prepareStatement("SET SCHEMA 'contacts_book';").execute();
-            connection.prepareStatement(
-                    "SET pljava.libjvm_location TO '/usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so';\n" +
-                    "CREATE EXTENSION IF NOT EXISTS pljava;" +
-//                    "SELECT sqlj.install_jar('/opt/contacts_book/contacts_book-1.1.jar', 'c', false);" +
-                    "SELECT sqlj.set_classpath('contacts_book', 'c');" +
-                    "SELECT sqlj.add_type_mapping('user_type', 'com.bubna.dao.db.UserMap');").execute();
             return connection;
         } catch (SQLException | ClassNotFoundException e) {
             throw new InitException("connection err");

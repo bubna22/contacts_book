@@ -1,11 +1,13 @@
 package com.bubna.dao.db;
 
+import org.postgresql.util.PGobject;
+
 import java.sql.SQLData;
 import java.sql.SQLException;
 import java.sql.SQLInput;
 import java.sql.SQLOutput;
 
-class ContactMap implements SQLData {
+class ContactMap extends PGobject {
 
     String contact_name;
     String contact_email;

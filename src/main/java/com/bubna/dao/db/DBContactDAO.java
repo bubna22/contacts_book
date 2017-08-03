@@ -26,7 +26,7 @@ final class DBContactDAO extends DBEntityAncestorDAO {
 
     @Override
     protected String getReadListFun() {
-        return "SELECT * FROM contact_list( ? );";
+        return "SELECT data FROM contact_list( ? ) as data;";
     }
 
     @Override
