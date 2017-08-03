@@ -31,28 +31,21 @@ final class DBContactDAO extends DBEntityAncestorDAO {
 
     @Override
     protected void initMappingClass(Connection connection) throws InitException {
-        try {
-            Map map = new HashMap();
-            map.put("contacts_book.contact_type", Class.forName("com.bubna.dao.db.ContactMap"));
-            map.put("contacts_book.user_type", Class.forName("com.bubna.dao.db.UserMap"));
-            connection.setTypeMap(map);
-        } catch (SQLException | ClassNotFoundException e) {
-            throw new InitException("class-mapper initialization error; " + this.getClass().getName());
-        }
+
     }
 
     @Override
     protected HashMap<String, EntityAncestor> getFromResultSet(ResultSet rs) throws SQLException {
         HashMap<String, EntityAncestor> dataReturned = new HashMap<>();
         while (rs.next()) {
-            ContactMap contactMap = (ContactMap) rs.getObject("data");
+//            ContactMap contactMap = (ContactMap) rs.getObject("data");
             Contact newContact = new Contact(
-                    contactMap.contact_name,
-                    contactMap.contact_email,
-                    contactMap.contact_num,
-                    contactMap.contact_skype,
-                    contactMap.contact_telegram,
-                    contactMap.group_name);
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getInt(3),
+                    rs.getString(4),
+                    rs.getString(5),
+                    rs.getString(1));
             dataReturned.put(newContact.getName(), newContact);
         }
         return dataReturned;

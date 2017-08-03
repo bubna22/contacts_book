@@ -4,6 +4,7 @@ CREATE TYPE group_type AS (
 );
 
 CREATE TYPE contact_type AS (
+    contact_id INTEGER,
     contact_name VARCHAR(1024),
     contact_email VARCHAR(1024),
     contact_telegram VARCHAR(1024),
@@ -53,11 +54,11 @@ CREATE OR REPLACE FUNCTION check_access(var_user user_type) RETURNS void AS $$
 DECLARE
     temp_login VARCHAR;
 BEGIN
-    SELECT user_login
+    SELECT users.user_login
         INTO temp_login
         FROM users
-        WHERE user_login = var_user.user_login AND user_ip = var_user.user_ip;
-    IF temp_login IS NULL THEN RAISE EXCEPTION 'unregistered user %', user_login; END IF;
+        WHERE users.user_login = var_user.user_login AND users.user_ip = var_user.user_ip;
+    IF temp_login IS NULL THEN RAISE EXCEPTION 'unregistered user %', var_user.user_login; END IF;
 END;
 $$ LANGUAGE plpgsql;
 

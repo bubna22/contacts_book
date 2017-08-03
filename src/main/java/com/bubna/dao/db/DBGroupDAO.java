@@ -31,13 +31,7 @@ final class DBGroupDAO extends DBEntityAncestorDAO {
 
     @Override
     protected void initMappingClass(Connection connection) throws InitException {
-        try {
-            Map map = new HashMap();
-            map.put("contacts_book.group_type", Class.forName("com.bubna.dao.db.GroupMap"));
-            connection.setTypeMap(map);
-        } catch (SQLException | ClassNotFoundException e) {
-            throw new InitException("class-mapper initialization error; " + this.getClass().getName());
-        }
+
     }
 
     @Override

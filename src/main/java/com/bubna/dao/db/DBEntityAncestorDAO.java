@@ -6,6 +6,7 @@ import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
 import com.bubna.exceptions.NoSuchElementException;
 import com.bubna.model.entities.EntityAncestor;
+import org.postgresql.util.PGobject;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -40,6 +41,10 @@ abstract class DBEntityAncestorDAO implements TemplateDAO<String, EntityAncestor
             userMap.user_login = "bubna";
             userMap.user_pass = "";
             userMap.user_ip = "1";
+
+            PGobject p = new PGobject();
+            p.setType("user_type");
+            p.setValue("(1,bubna,,1,0)");
             preparedStatement.setObject(1, userMap);
 
             dataReturned = getFromResultSet(preparedStatement.executeQuery());
@@ -57,12 +62,12 @@ abstract class DBEntityAncestorDAO implements TemplateDAO<String, EntityAncestor
         dataReturned.keySet().toArray(keys);
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
-            if (!pKey.test(key)) {
+            if (pKey != null && !pKey.test(key)) {
                 dataReturned.remove(key);
                 continue;
             }
             EntityAncestor value = dataReturned.get(key);
-            if (!pValue.test(value)) dataReturned.remove(key);
+            if (pValue != null && !pValue.test(value)) dataReturned.remove(key);
         }
         try {
             source.close();

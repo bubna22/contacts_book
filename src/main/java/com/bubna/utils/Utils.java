@@ -8,6 +8,10 @@ import java.net.URISyntaxException;
  */
 public class Utils {
 
+    public static String getJarDir() throws URISyntaxException {
+        return new File(Utils.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath();
+    }
+
     public static File getRootDir() throws URISyntaxException {
         return new File(Utils.class.getResource("/storage").getFile());
     }
