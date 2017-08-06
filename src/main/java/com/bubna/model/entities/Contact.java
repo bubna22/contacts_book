@@ -20,18 +20,6 @@ public class Contact extends EntityAncestor {
         this.groupName = groupName;
     }
 
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("__").append(this.getClass().getName()).append("\n")
-                .append("____").append("name: ").append(name).append("\n")
-                .append("____").append("email: ").append(email).append("\n")
-                .append("____").append("num: ").append(num).append("\n")
-                .append("____").append("skype: ").append(skype).append("\n")
-                .append("____").append("telegram: ").append(telegram).append("\n")
-                .append("____").append("groupName: ").append(groupName).append("\n");
-        return sb.toString();
-    }
-
     public String getEmail() {
         return email;
     }

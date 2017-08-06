@@ -7,6 +7,7 @@ import com.bubna.exceptions.InitException;
 import com.bubna.model.entities.Contact;
 import com.bubna.model.entities.EntityAncestor;
 import com.bubna.model.entities.Group;
+import com.bubna.model.entities.User;
 
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -28,6 +29,8 @@ public enum DBDAOFactory implements DAOFactory<Connection> {
             return new DBContactDAO().setUpdatedSource(source);
         } else if (daoType.equals(Group.class)) {
             return new DBGroupDAO().setUpdatedSource(source);
+        } else if (daoType.equals(User.class)) {
+            return new DBUserDAO().setUpdatedSource(source);
         }
         throw new IncorrectInputException("Invalid format of requested data");
     }
@@ -39,15 +42,9 @@ public enum DBDAOFactory implements DAOFactory<Connection> {
             jdbcClassInited = true;
             Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:32768/postgres", "postgres", "");
             connection.prepareStatement("SET SCHEMA 'contacts_book';").execute();
-            connection.prepareStatement(
-                    "SET pljava.libjvm_location TO '/usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so';\n" +
-                    "CREATE EXTENSION IF NOT EXISTS pljava;" +
-//                    "SELECT sqlj.install_jar('/opt/contacts_book/contacts_book-1.1.jar', 'c', false);" +
-                    "SELECT sqlj.set_classpath('contacts_book', 'c');" +
-                    "SELECT sqlj.add_type_mapping('user_type', 'com.bubna.dao.db.UserMap');").execute();
             return connection;
         } catch (SQLException | ClassNotFoundException e) {
-            throw new InitException("connection err");
+            throw new InitException(e.getMessage()==null?"connection err":e.getMessage());
         }
     }
 }

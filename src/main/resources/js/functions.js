@@ -1,3 +1,27 @@
+var errContainer;
+
+var addError = function(errMsg) {
+    var html = "<div class=\"alert alert-danger\">" +
+               "<a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>" +
+               "<strong>Danger!</strong> " + errMsg +
+               "</div>";
+    $(errContainer).append(html);
+}
+
+var loggedIn = function() {
+    $('#myModal').modal('hide');
+    contactView.actionJS("list", null);
+    groupView.actionJS("list", null);
+}
+
+var userLogin = function() {
+    var login = $('#login_input_field').val();
+    var pass = $('#pass_input_field').val();
+    errContainer = '#login_container';
+
+    userView.actionJS("login", login + "/" + pass);
+}
+
 var addElem = function(xpathContainer, htmlElem) {
    $(xpathContainer).append(htmlElem);
 };
@@ -97,4 +121,5 @@ var createGroup = function(name) {
 
 $(function(){
 	alert("command:ready");
+	$('#myModal').modal('show');
 });

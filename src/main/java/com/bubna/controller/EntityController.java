@@ -5,7 +5,7 @@ import com.bubna.model.entities.EntityAncestor;
 
 public class EntityController <V extends EntityAncestor> implements Controller<V> {
 
-    private Model storageModel;
+    protected Model storageModel;
 
     public EntityController(Model model) {
         storageModel = model;
@@ -13,6 +13,7 @@ public class EntityController <V extends EntityAncestor> implements Controller<V
 
     @Override
     public void listen(String action, V entity) {
+        storageModel.prepare();
         switch (action) {
             case "list":
                 storageModel.list(entity);

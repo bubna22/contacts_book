@@ -15,6 +15,10 @@ public class ContactModel extends AbstractModel<Contact> {
     public ContactModel(DAOFactory daoFactory, ObservablePart observable) {
         this.daoFactory = daoFactory;
         this.observable = observable;
+    }
+
+    @Override
+    public void prepare() {
         try {
             this.dao = daoFactory.getDAO(daoFactory.getSource(), Contact.class);
         } catch (InitException | URISyntaxException | IncorrectInputException e) {
@@ -24,15 +28,16 @@ public class ContactModel extends AbstractModel<Contact> {
 
     @Override
     public void list(Contact entity) {
+        super.list(entity);
         try {
             if (entity.getGroupName() != null && entity.getGroupName().equals("")) {
                 DAO d1 = daoFactory.getDAO(daoFactory.getSource(), Group.class);
-                d1.get(entity.getGroupName());
+                d1.get(acc, entity.getGroupName());
             }
 
             observable.setChanged();
             observable.notifyObservers(
-                    dao.list(o -> (entity.getGroupName() == null) ||
+                    dao.list(acc, o -> (entity.getGroupName() == null) ||
                                     (((Contact) o).getGroupName() != null &&
                                     entity.getGroupName().equals(((Contact) o).getGroupName()))
                     )
