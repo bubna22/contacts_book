@@ -4,6 +4,7 @@ import com.bubna.controller.EntityController;
 import com.bubna.model.entities.Contact;
 import com.bubna.model.entities.EntityAncestor;
 import com.bubna.model.entities.Group;
+import com.bubna.model.entities.User;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -17,6 +18,7 @@ public enum ViewFactory {
     private WebEngine webEngine;
     private ContactView contactView;
     private GroupView groupView;
+    private UserView userView;
 
     public void addView(Observable observable, EntityController entityController, Class<? extends EntityAncestor> eClass) {
         if (eClass.equals(Contact.class)) {
@@ -31,6 +33,12 @@ public enum ViewFactory {
             groupView.setController(entityController);
             groupView.setWebEngine(webEngine);
             observable.addObserver(groupView);
+        } else if (eClass.equals(User.class)) {
+            userView = new UserView("userView");
+            userView.setContainerCSSSelector(null);
+            userView.setController(entityController);
+            userView.setWebEngine(webEngine);
+            observable.addObserver(userView);
         }
     }
 
@@ -44,8 +52,7 @@ public enum ViewFactory {
 
             webEngine.setOnAlert(event -> {
                 if("command:ready".equals(event.getData())){
-                    contactView.actionJS("list", null);
-                    groupView.actionJS("list", null);
+
                 }
             });
 

@@ -1,36 +1,43 @@
 package com.bubna.dao.db;
 
-import java.sql.SQLData;
-import java.sql.SQLException;
-import java.sql.SQLInput;
-import java.sql.SQLOutput;
+import com.bubna.model.entities.User;
+import org.postgresql.util.PGobject;
 
-class UserMap implements SQLData {
+class UserMap extends CustomMap<User> {
 
-    public String user_login;
-    public String user_pass;
-    public String user_ip;
+    String user_login;
+    String user_pass;
+    String user_ip;
 
-    private String sql_type;
+    UserMap(PGobject data) {
+        super(data);
+    }
 
-    @Override
-    public String getSQLTypeName() throws SQLException {
-        return sql_type;
+    UserMap(User user) {
+        super(user);
+        this.user_login = user.getName();
+        this.user_pass = user.getPass();
+        this.user_ip = user.getIp();
+        prepareOutput();
     }
 
     @Override
-    public void readSQL(SQLInput stream, String typeName) throws SQLException {
-        sql_type = typeName;
-
-        user_login = stream.readString();
-        user_pass = stream.readString();
-        user_ip = stream.readString();
+    protected void prepareInput(String[] values) {
+        user_login = values[0].replace("'", "");
+        user_pass = values[1].replace("'", "");
+        user_ip = values[2].replace("'", "");
     }
 
     @Override
-    public void writeSQL(SQLOutput stream) throws SQLException {
-        stream.writeString(user_login);
-        stream.writeString(user_pass);
-        stream.writeString(user_ip);
+    protected void prepareOutput() {
+        type = "user_type";
+        value = "(" + user_login + "," + user_pass + "," + user_ip + ")";
+    }
+
+    @Override
+    protected User getEntity() {
+        return new User(this.user_login,
+                        this.user_pass,
+                        this.user_ip);
     }
 }

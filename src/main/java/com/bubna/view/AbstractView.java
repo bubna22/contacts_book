@@ -11,14 +11,25 @@ import java.util.Observable;
 abstract class AbstractView<V extends EntityAncestor> implements Viewable<V> {
 
     private Controller controller;
-    private WebEngine webEngine;
+    protected WebEngine webEngine;
     private String cssSelector;
 
-    protected String jsName;
+    String jsName;
 
-    protected abstract V fromHtml(String html);
-    protected abstract String toHtml(V entity);
-    protected abstract boolean checkType(Object obj);
+    protected V fromHtml(String html) {return null;}
+    protected String toHtml(V entity) {return null;}
+    protected boolean checkType(Object obj) {return false;}
+    protected void parseEntity(V entity) {
+        if (!checkType(entity)) return;
+//        webEngine.executeScript("remElem('" + cssSelector + "', '" + entity.getName() + "')");
+        webEngine.executeScript("addElem('" + cssSelector + "', '" + toHtml(entity) + "')");
+    }
+    protected void parseEntitiesArray(ArrayList<V> args) {
+        for (int i = 0; i < args.size(); i++) {
+            V entity = args.get(i);
+            parseEntity(entity);
+        }
+    }
 
     AbstractView(String jsName) {
         this.jsName = jsName;
@@ -28,20 +39,12 @@ abstract class AbstractView<V extends EntityAncestor> implements Viewable<V> {
     public void update(Observable o, Object arg) {
         if (!checkType(arg)) return;
         if (arg instanceof Exception) {
-//            webEngine.executeScript("alert('" + arg.toString() + "')");
-            System.out.println(arg.toString());
+            webEngine.executeScript("addError('" + ((Exception) arg).getMessage() + "')");
         } else if (arg instanceof ArrayList) {
-            ArrayList<V> list = (ArrayList<V>) arg;
-            for (int i = 0; i < list.size(); i++) {
-                V entity = list.get(i);
-                if (!checkType(entity)) return;
-                webEngine.executeScript("remElem('" + cssSelector + "', '" + entity.getName() + "')");
-                webEngine.executeScript("addElem('" + cssSelector + "', '" + toHtml(entity) + "')");
-            }
+            parseEntitiesArray((ArrayList<V>) arg);
         } else {
             V entity = (V) arg;
-            webEngine.executeScript("remElem('" + cssSelector + "', '" + entity.getName() + "')");
-            webEngine.executeScript("addElem('" + cssSelector + "', '" + toHtml(entity) + "')");
+            parseEntity(entity);
         }
     }
 

@@ -1,32 +1,30 @@
 package com.bubna.model.entities;
 
-public class User {
+public class User extends EntityAncestor {
 
-    private Integer color;
+    private String pass;
+    private String ip;
 
-    public Group(String name, Integer color) {
-        this.name = name;
-        this.color = color;
+    public User(String login, String pass, String ip) {
+        this.name = login;
+        this.pass = pass;
+        this.ip = ip;
     }
 
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("__").append(this.getClass().getName()).append("\n")
-                .append("____").append("name: ").append(name).append("\n")
-                .append("____").append("color: ").append(color).append("\n");
-        return sb.toString();
+    public String getPass() {
+        return pass;
     }
 
-    public Integer getColor() {
-        return color;
+    public String getIp() {
+        return ip;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPass(String pass) {
+        this.pass = pass;
     }
 
-    public void setColor(int color) {
-        this.color = color;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
 }

@@ -1,15 +1,15 @@
 package com.bubna.dao.db;
 
 import com.bubna.exceptions.InitException;
+import com.bubna.model.entities.Contact;
 import com.bubna.model.entities.EntityAncestor;
 import com.bubna.model.entities.Group;
+import org.postgresql.util.PGobject;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLData;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Map;
 
 final class DBGroupDAO extends DBEntityAncestorDAO {
 
@@ -30,34 +30,23 @@ final class DBGroupDAO extends DBEntityAncestorDAO {
     }
 
     @Override
-    protected void initMappingClass(Connection connection) throws InitException {
-
-    }
-
-    @Override
     protected HashMap<String, EntityAncestor> getFromResultSet(ResultSet rs) throws SQLException {
         HashMap<String, EntityAncestor> dataReturned = new HashMap<>();
         while (rs.next()) {
-            GroupMap groupMap = (GroupMap) rs.getObject("data");
-            Group newGroup = new Group(
-                    groupMap.group_name,
-                    groupMap.group_color);
+            Group newGroup = new GroupMap((PGobject) rs.getObject("data")).getEntity();
+
             dataReturned.put(newGroup.getName(), newGroup);
         }
         return dataReturned;
     }
 
     @Override
-    protected SQLData toObjectMap(EntityAncestor entityAncestor) {
-        Group inputGroup = (Group) entityAncestor;
-        GroupMap groupMap = new GroupMap();
-        groupMap.group_name = inputGroup.getName();
-        groupMap.group_color = inputGroup.getColor();
-        return groupMap;
+    protected PGobject toObjectMap(EntityAncestor entityAncestor) {
+        return new GroupMap((Group) entityAncestor);
     }
 
     @Override
-    protected SQLData toObjectMap(String key) {
+    protected PGobject toObjectMap(String key) {
         Group group = new Group(key, 0);
         return toObjectMap(group);
     }

@@ -12,8 +12,4 @@ public abstract class EntityAncestor implements Serializable {
     public String getName() {
         return name;
     }
-
-    public String toString() {
-        return super.toString();
-    }
 }

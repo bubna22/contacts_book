@@ -1,6 +1,5 @@
 package com.bubna.model;
 
-import com.bubna.dao.DAO;
 import com.bubna.dao.DAOFactory;
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
@@ -21,10 +20,20 @@ public class GroupModel extends AbstractModel<Group> {
     }
 
     @Override
+    public void prepare() {
+        try {
+            this.dao = daoFactory.getDAO(daoFactory.getSource(), Group.class);
+        } catch (InitException | URISyntaxException | IncorrectInputException e) {
+            applyException(e);
+        }
+    }
+
+    @Override
     public void list(Group entity) {
+        super.list(entity);
         try {
             observable.setChanged();
-            observable.notifyObservers(dao.list(o -> true));
+            observable.notifyObservers(dao.list(acc, o -> true));
         } catch (InitException | NoSuchElementException e) {
             applyException(e);
         }

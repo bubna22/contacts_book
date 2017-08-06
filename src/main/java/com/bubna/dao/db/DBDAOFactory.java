@@ -7,6 +7,7 @@ import com.bubna.exceptions.InitException;
 import com.bubna.model.entities.Contact;
 import com.bubna.model.entities.EntityAncestor;
 import com.bubna.model.entities.Group;
+import com.bubna.model.entities.User;
 
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -28,6 +29,8 @@ public enum DBDAOFactory implements DAOFactory<Connection> {
             return new DBContactDAO().setUpdatedSource(source);
         } else if (daoType.equals(Group.class)) {
             return new DBGroupDAO().setUpdatedSource(source);
+        } else if (daoType.equals(User.class)) {
+            return new DBUserDAO().setUpdatedSource(source);
         }
         throw new IncorrectInputException("Invalid format of requested data");
     }

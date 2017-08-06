@@ -10,8 +10,7 @@ CREATE TABLE users (
     user_row_version INTEGER DEFAULT NULL
 );
 
-CREATE UNIQUE INDEX user_login_unique_index ON users (user_login, user_ip)
-    WITH (fastupdate=OFF);
+CREATE UNIQUE INDEX user_login_unique_index ON users (user_login, user_ip);
 
 CREATE TABLE groups (
     group_id BIGSERIAL PRIMARY KEY,
@@ -33,11 +32,18 @@ CREATE TABLE contacts (
 
 CREATE UNIQUE INDEX contact_name_unique_index ON contacts (contact_name);
 
+CREATE TYPE access_type_variations AS ENUM ('owner', 'reader', 'modifier');
+
+CREATE TABLE access_type (
+    access_type_id BIGSERIAL PRIMARY KEY,
+    access_type_value access_type_variations
+);
+
 CREATE TABLE contact_user (
     contact_user_id BIGSERIAL PRIMARY KEY,
     contact_id INTEGER REFERENCES contacts(contact_id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
-    contact_user_access_type VARCHAR(10) REFERENCES access_type(access_type_id) ON DELETE CASCADE
+    contact_user_access_type INTEGER REFERENCES access_type(access_type_id) ON DELETE CASCADE
 );
 
 CREATE INDEX contact_user_ids_unique_index ON contact_user (contact_id, user_id);
@@ -50,12 +56,3 @@ CREATE TABLE group_user (
 );
 
 CREATE INDEX group_user_ids_unique_index ON group_user (group_id, user_id);
-
-CREATE TYPE access_type_variations AS ENUM ('owner', 'reader', 'modifier');
-
-CREATE TABLE access_type (
-    access_type_id BIGSERIAL PRIMARY KEY,
-    access_type_value access_type_variations
-);
-
-

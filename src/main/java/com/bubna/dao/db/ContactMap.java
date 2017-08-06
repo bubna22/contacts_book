@@ -1,13 +1,10 @@
 package com.bubna.dao.db;
 
+import com.bubna.model.entities.Contact;
+import com.bubna.model.entities.EntityAncestor;
 import org.postgresql.util.PGobject;
 
-import java.sql.SQLData;
-import java.sql.SQLException;
-import java.sql.SQLInput;
-import java.sql.SQLOutput;
-
-class ContactMap extends PGobject {
+class ContactMap extends CustomMap<Contact> {
 
     String contact_name;
     String contact_email;
@@ -16,32 +13,47 @@ class ContactMap extends PGobject {
     String contact_skype;
     String group_name;
 
-    private String sql_type;
+    ContactMap(PGobject data) {
+        super(data);
+    }
 
-    @Override
-    public String getSQLTypeName() throws SQLException {
-        return sql_type;
+    ContactMap(Contact contact) {
+        super(contact);
+        this.contact_name = contact.getName();
+        this.contact_email = contact.getEmail();
+        this.contact_num = contact.getNum();
+        this.contact_skype = contact.getSkype();
+        this.contact_telegram = contact.getTelegram();
+        this.group_name = contact.getGroupName();
+        prepareOutput();
     }
 
     @Override
-    public void readSQL(SQLInput stream, String typeName) throws SQLException {
-        sql_type = typeName;
-
-        contact_name = stream.readString();
-        contact_email = stream.readString();
-        contact_telegram = stream.readString();
-        contact_num = stream.readInt();
-        contact_skype = stream.readString();
-        group_name = stream.readString();
+    protected void prepareInput(String[] values) {
+        contact_name = values[0].replace("'", "");
+        contact_email = values[1].replace("'", "");
+        contact_telegram = values[2].replace("'", "");
+        contact_num = values[3].contains("'")||values[3].equals("")?0:new Integer(values[3]);
+        contact_skype = values[4].replace("'", "");
+        group_name = values[5].replace("'", "");
     }
 
     @Override
-    public void writeSQL(SQLOutput stream) throws SQLException {
-        stream.writeString(contact_name);
-        stream.writeString(contact_email);
-        stream.writeString(contact_telegram);
-        stream.writeInt(contact_num);
-        stream.writeString(contact_skype);
-        stream.writeString(group_name);
+    protected void prepareOutput() {
+        type = "contact_type";
+        value = "(" + contact_name + "," + contact_email + "," + contact_telegram + "," +
+                contact_num + "," + contact_skype + "," + group_name + ")";
     }
+
+    @Override
+    protected Contact getEntity() {
+        return new Contact(
+                this.contact_name,
+                this.contact_email,
+                this.contact_num,
+                this.contact_skype,
+                this.contact_telegram,
+                this.group_name);
+    }
+
 }

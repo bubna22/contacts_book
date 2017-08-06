@@ -1,33 +1,40 @@
 package com.bubna.dao.db;
 
-import java.sql.SQLData;
-import java.sql.SQLException;
-import java.sql.SQLInput;
-import java.sql.SQLOutput;
+import com.bubna.model.entities.Group;
+import org.postgresql.util.PGobject;
 
-class GroupMap implements SQLData {
+class GroupMap extends CustomMap<Group> {
 
-    public String group_name;
-    public Integer group_color;
+    Integer group_color;
+    String group_name;
 
-    private String sql_type;
+    GroupMap(PGobject data) {
+        super(data);
+    }
 
-    @Override
-    public String getSQLTypeName() throws SQLException {
-        return sql_type;
+    GroupMap(Group group) {
+        super(group);
+        this.group_name = group.getName();
+        this.group_color = group.getColor();
+        prepareOutput();
     }
 
     @Override
-    public void readSQL(SQLInput stream, String typeName) throws SQLException {
-        sql_type = typeName;
-
-        group_name = stream.readString();
-        group_color = stream.readInt();
+    protected void prepareInput(String[] values) {
+        group_name = values[0].replace("'", "");
+        group_color = values.length<2||values[1].contains("'")||values[1].equals("")?0:new Integer(values[1]);
     }
 
     @Override
-    public void writeSQL(SQLOutput stream) throws SQLException {
-        stream.writeString(group_name);
-        stream.writeInt(group_color);
+    protected void prepareOutput() {
+        type = "group_type";
+        value = "(" + group_name + "," + group_color + ")";
+    }
+
+    @Override
+    protected Group getEntity() {
+        return new Group(
+                this.group_name,
+                this.group_color);
     }
 }
