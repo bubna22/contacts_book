@@ -10,6 +10,7 @@ import com.bubna.model.entities.Group;
 import com.bubna.model.entities.User;
 import com.bubna.utils.TransferObject;
 import com.bubna.utils.UserContactPair;
+import com.bubna.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -47,9 +48,9 @@ public class ContactModel extends AbstractModel<Contact> {
                     }
 
                     UserContactPair customPair = new UserContactPair(u, entity);
-                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-                    TransferObject transferObject = new TransferObject("contact", "list", gson.toJson(customPair));
+                    TransferObject transferObject = new TransferObject("contact", "list", Utils.INSTANCE.getGson().toJson(customPair));
+                    Utils.INSTANCE.putGson();
                     dao.sendRequest(transferObject);
                     synchronized (observable) {
                         observable.setChanged();

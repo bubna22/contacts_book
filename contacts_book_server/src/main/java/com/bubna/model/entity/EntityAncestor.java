@@ -1,5 +1,6 @@
 package com.bubna.model.entity;
 
+import com.bubna.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -17,12 +18,18 @@ public abstract class EntityAncestor implements Serializable {
     }
 
     public String serialize() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(this);
+        try {
+            return Utils.INSTANCE.getGson().toJson(this);
+        } finally {
+            Utils.INSTANCE.putGson();
+        }
     }
 
     public static <V extends EntityAncestor> V deserialize(String data, Class<V> entityClass) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.fromJson(data, entityClass);
+        try {
+            return Utils.INSTANCE.getGson().fromJson(data, entityClass);
+        } finally {
+            Utils.INSTANCE.putGson();
+        }
     }
 }

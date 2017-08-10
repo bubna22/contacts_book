@@ -1,8 +1,5 @@
 package com.bubna.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 abstract class CustomPair<K, V> {
 
     private K v1;
@@ -22,12 +19,18 @@ abstract class CustomPair<K, V> {
     }
 
     public String serialize() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(this);
+        try {
+            return Utils.INSTANCE.getGson().toJson(this);
+        } finally {
+            Utils.INSTANCE.putGson();
+        }
     }
 
     public static CustomPair deserialize(String data) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.fromJson(data, CustomPair.class);
+        try {
+            return Utils.INSTANCE.getGson().fromJson(data, CustomPair.class);
+        } finally {
+            Utils.INSTANCE.putGson();
+        }
     }
 }

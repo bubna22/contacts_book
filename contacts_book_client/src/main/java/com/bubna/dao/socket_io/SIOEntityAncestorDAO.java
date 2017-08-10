@@ -8,6 +8,8 @@ import com.bubna.exceptions.NoSuchElementException;
 import com.bubna.model.entities.EntityAncestor;
 import com.bubna.model.entities.User;
 import com.bubna.utils.TransferObject;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,7 +18,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
-abstract class DBEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, Socket> {
+abstract class SIOEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, Socket> {
 
     protected Socket source;
 
@@ -68,7 +70,7 @@ abstract class DBEntityAncestorDAO implements TemplateDAO<String, EntityAncestor
         values.keySet().toArray(keys);
 
         for (int i = 0; i < keys.length; i++) {
-            TransferObject transferObject = new TransferObject(getEntityName(), "modify", values.get(keys[i]).serialize());
+            TransferObject transferObject = getModifyTransferObject(acc, values.get(keys[i]));
             dos.writeUTF(transferObject.serialize());
         }
     }
@@ -79,5 +81,8 @@ abstract class DBEntityAncestorDAO implements TemplateDAO<String, EntityAncestor
     }
 
     protected abstract String getEntityName();
+    protected TransferObject getModifyTransferObject(User user, EntityAncestor entityAncestor) throws InitException {
+        throw new InitException("no such interface");
+    }
     protected HashMap<String, EntityAncestor> getFromString(String data) {return null;}
 }

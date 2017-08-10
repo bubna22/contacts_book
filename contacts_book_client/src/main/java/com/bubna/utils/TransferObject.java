@@ -1,8 +1,5 @@
 package com.bubna.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 public class TransferObject {
 
     private String who;
@@ -16,13 +13,20 @@ public class TransferObject {
     }
 
     public String serialize() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(this);
+        try {
+            return Utils.INSTANCE.getGson().toJson(this);
+        } finally {
+            Utils.INSTANCE.putGson();
+        }
+
     }
 
     public static TransferObject deserialize(String json) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.fromJson(json, TransferObject.class);
+        try {
+            return Utils.INSTANCE.getGson().fromJson(json, TransferObject.class);
+        } finally {
+            Utils.INSTANCE.putGson();
+        }
     }
 
     public String getWho() {

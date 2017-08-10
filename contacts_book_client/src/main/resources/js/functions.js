@@ -11,6 +11,11 @@ var addError = function(errMsg) {
     $(errContainer).append(html);
 }
 
+var reload = function() {
+    contactView.actionJS("list", null);
+    groupView.actionJS("list", null);
+}
+
 var loggedIn = function(l, p, i) {
     login = l;
     pass = p;
@@ -36,7 +41,7 @@ var addElem = function(xpathContainer, htmlElem) {
    $(xpathContainer).append(htmlElem);
 };
 var remElem = function(xpathContainer, elemId) {
-   $(xpathContainer + '>#' + elemId).remove();
+   $('#' + elemId).remove();
 };
 
 var onEdit = function(element) {

@@ -1,20 +1,13 @@
 package com.bubna.view;
 
-import com.bubna.Init;
 import com.bubna.controller.EntityController;
-import com.bubna.exceptions.InitException;
 import com.bubna.model.entities.Contact;
 import com.bubna.model.entities.EntityAncestor;
 import com.bubna.model.entities.Group;
 import com.bubna.model.entities.User;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
-import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.Stage;
 
 import java.util.Observable;
 

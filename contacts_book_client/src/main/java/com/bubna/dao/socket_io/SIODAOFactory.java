@@ -12,20 +12,17 @@ import com.bubna.model.entities.User;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URISyntaxException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 /**
  * Created by test on 17.07.2017.
  */
-public enum DBDAOFactory implements DAOFactory<Socket> {
+public enum SIODAOFactory implements DAOFactory<Socket> {
 
     INSTANCE;
 
-    private DAO contactDAO = new DBContactDAO();
-    private DAO groupDAO = new DBGroupDAO();
-    private DAO userDAO = new DBUserDAO();
+    private DAO contactDAO = new SIOContactDAO();
+    private DAO groupDAO = new SIOGroupDAO();
+    private DAO userDAO = new SIOUserDAO();
 
     @Override
     public synchronized DAO getDAO(Socket source, Class<? extends EntityAncestor> daoType) throws IncorrectInputException, InitException {

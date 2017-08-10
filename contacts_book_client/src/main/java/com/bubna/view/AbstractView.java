@@ -21,12 +21,13 @@ abstract class AbstractView<V extends EntityAncestor> implements Viewable<V> {
     protected V fromHtml(String html) {return null;}
     protected String toHtml(V entity) {return null;}
     protected boolean checkType(Object obj) {return false;}
+    protected String getEntityPrefix() {return null;}
     protected void parseEntity(V entity) {
         if (!checkType(entity)) return;
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                webEngine.executeScript("remElem('" + cssSelector + "', '" + entity.getName() + "')");
+                webEngine.executeScript("remElem('" + cssSelector + "', '" + getEntityPrefix() + entity.getName() + "')");
                 webEngine.executeScript("addElem('" + cssSelector + "', '" + toHtml(entity) + "')");
             }
         });

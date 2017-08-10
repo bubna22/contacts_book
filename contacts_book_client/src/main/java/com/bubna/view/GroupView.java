@@ -46,6 +46,11 @@ public class GroupView extends AbstractView<Group> {
     }
 
     @Override
+    protected String getEntityPrefix() {
+        return "group_";
+    }
+
+    @Override
     protected Group fromHtml(String html) {
         String[] data = new String[6];
         if (html != null) {

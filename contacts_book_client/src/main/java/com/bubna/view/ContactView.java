@@ -62,6 +62,11 @@ public class ContactView extends AbstractView<Contact> {
     }
 
     @Override
+    protected String getEntityPrefix() {
+        return "contact_";
+    }
+
+    @Override
     protected Contact fromHtml(String html) {
         String[] data = new String[6];
         if (html != null) {

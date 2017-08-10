@@ -7,7 +7,7 @@ import com.bubna.utils.TransferObject;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-final class DBUserDAO extends DBEntityAncestorDAO {
+final class SIOUserDAO extends SIOEntityAncestorDAO {
 
     @Override
     public final User login(User acc) throws InitException, IOException {

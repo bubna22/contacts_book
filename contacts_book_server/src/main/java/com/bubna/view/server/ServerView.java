@@ -42,7 +42,7 @@ public class ServerView implements View {
         wThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
+                while (!socket.isClosed()) {
                     if (wMessages.isEmpty()) {
                         synchronized (wThread) {
                             try {

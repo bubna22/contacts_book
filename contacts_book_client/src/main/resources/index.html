@@ -10,36 +10,37 @@
         <link href="css/style.css" rel="stylesheet" type="text/css">
     </head>
     <body class="javaFX">
-    <div class="modal fade" id="myModal">
-        <div class="modal-dialog">
-            <div class="modal-content" id="login_container">
-                <div class="modal-header">
-                    <h4 class="modal-title">login window</h4>
-                </div>
-                <div class="modal-body">
-                    <input  onchange="onEdit(document.getElementById('login_input_field'))"
-                            id="login_input_field"
-                            pattern=".{1,}"
-                            class="form-control"
-                            value=""
-                            placeholder="login">
-                    <input  onchange="onEdit(document.getElementById('pass_input_field'))"
-                            id="pass_input_field"
-                            pattern=".{1,}"
-                            class="form-control"
-                            value=""
-                            placeholder="password">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="userLogin();">Login</button>
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog">
+                <div class="modal-content" id="login_container">
+                    <div class="modal-header">
+                        <h4 class="modal-title">login window</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input  onchange="onEdit(document.getElementById('login_input_field'))"
+                                id="login_input_field"
+                                pattern=".{1,}"
+                                class="form-control"
+                                value=""
+                                placeholder="login">
+                        <input  onchange="onEdit(document.getElementById('pass_input_field'))"
+                                id="pass_input_field"
+                                pattern=".{1,}"
+                                class="form-control"
+                                value=""
+                                placeholder="password">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="userLogin();">Login</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container-fluid">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-md-7 bubna-col">
+                    <button class="btn" onclick="reload()">Обновить</button>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <tr>
