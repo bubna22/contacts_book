@@ -2,27 +2,30 @@ package com.bubna.dao.cmd;
 
 import com.bubna.exception.CustomException;
 
-public class UserCountCommand extends AbstractAdminCommand {
+public class LoginEntityCommand extends AbstractEntityCommand {
 
-    public UserCountCommand(String id) {
+    public LoginEntityCommand(String id) {
         super(id);
     }
 
     @Override
     public synchronized Command clone() {
-        return new UserCountCommand(this.id);
+        return new LoginEntityCommand(this.id);
     }
 
     @Override
     public void execute() {
+        super.execute();
         try {
-            adminDAO.prepare();
-            result = adminDAO.userCount();
+            if (!input.containsKey("user")) throw new CustomException("incorrect input");
+            entityDao.prepare();
+            entityDao.update();
+            result = Boolean.TRUE;
         } catch (CustomException e) {
             result = e;
         } finally {
             try {
-                adminDAO.close();
+                entityDao.close();
             } catch (CustomException e) {
                 e.printStackTrace();
             }

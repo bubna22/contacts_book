@@ -2,14 +2,9 @@ package com.bubna.dao;
 
 import com.bubna.exception.CustomException;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
-public interface DAO <V> {
+public interface DAO {
     void prepare() throws CustomException;
-    void addExtra(String key, Object extra);
-    void create() throws CustomException;
-    void delete() throws CustomException;
-    void update() throws CustomException;
-    Collection<V> list() throws CustomException;
     void close() throws CustomException;
 }

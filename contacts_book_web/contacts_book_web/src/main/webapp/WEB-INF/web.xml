@@ -6,11 +6,76 @@
     <servlet>
         <servlet-name>UserCount</servlet-name>
         <jsp-file>/UserCount.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>UserContactsCount</servlet-name>
+        <jsp-file>/UserContactsCount.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>UserGroupsCount</servlet-name>
+        <jsp-file>/UserGroupsCount.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>UserAVGGroupsCount</servlet-name>
+        <jsp-file>/UserAVGGroupsCount.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>UserAVGContactsCount</servlet-name>
+        <jsp-file>/UserAVGContactsCount.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>InactiveUsers</servlet-name>
+        <jsp-file>/InactiveUsers.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>Contacts</servlet-name>
+        <jsp-file>/Contacts.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>Groups</servlet-name>
+        <jsp-file>/Groups.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>Main</servlet-name>
+        <jsp-file>/Main.jsp</jsp-file>
+        <load-on-startup>1</load-on-startup>
     </servlet>
     <!--mapping-->
     <servlet-mapping>
         <servlet-name>UserCount</servlet-name>
-        <url-pattern>/user_count</url-pattern>
+        <url-pattern>/users_count</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserContactsCount</servlet-name>
+        <url-pattern>/user_contacts_count</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserGroupsCount</servlet-name>
+        <url-pattern>/user_groups_count</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserAVGGroupsCount</servlet-name>
+        <url-pattern>/user_avg_groups_count</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserAVGContactsCount</servlet-name>
+        <url-pattern>/user_avg_contacts_count</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>InactiveUsers</servlet-name>
+        <url-pattern>/inactive_users</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Main</servlet-name>
+        <url-pattern>/main</url-pattern>
     </servlet-mapping>
     <listener>
         <listener-class>

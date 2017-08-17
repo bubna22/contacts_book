@@ -1,7 +1,3 @@
-DROP SCHEMA IF EXISTS contacts_book CASCADE;
-CREATE SCHEMA contacts_book;
-SET SCHEMA 'contacts_book';
-
 CREATE TABLE users (
     user_id BIGSERIAL PRIMARY KEY,
     user_login VARCHAR(1024),

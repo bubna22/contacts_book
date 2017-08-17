@@ -10,8 +10,8 @@
     </head>
     <body>
 
-        <p>user count:
-            <jsp:setProperty  name="jspBean" property="listen" value="count"/>
+        <p>user AVG contacts count:
+            <jsp:setProperty  name="jspBean" property="listen" value="userContactsAVGCount"/>
             <jsp:getProperty name="jspBean" property="answer" />
         </p>
 

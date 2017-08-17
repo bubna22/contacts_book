@@ -30,11 +30,16 @@ public class ContactMap extends CustomMap<Contact> {
     @Override
     protected void prepareInput(String[] values) {
         contact_name = values[0].replace("'", "");
-        contact_email = values[1].replace("'", "");
-        contact_telegram = values[2].replace("'", "");
-        contact_num = values[3].contains("'")||values[3].equals("")?0:new Integer(values[3]);
-        contact_skype = values[4].replace("'", "");
-        group_name = values[5].replace("'", "");
+        if (values.length > 1)
+            contact_email = values[1].replace("'", "");
+        if (values.length > 2)
+            contact_telegram = values[2].replace("'", "");
+        if (values.length > 3)
+            contact_num = values[3].contains("'")||values[3].equals("")?0:new Integer(values[3]);
+        if (values.length > 4)
+            contact_skype = values[4].replace("'", "");
+        if (values.length > 5)
+            group_name = values[5].replace("'", "");
     }
 
     @Override

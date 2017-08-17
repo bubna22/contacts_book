@@ -6,25 +6,28 @@ import com.bubna.model.entity.EntityAncestor;
 import com.bubna.model.entity.Group;
 import com.bubna.model.entity.User;
 
-import java.util.HashMap;
-
 public enum DBDAOFactory {
 
     INSTANCE;
 
-    private final DAO userDAO = new UserDAO();
-    private final DAO groupDAO = new GroupDAO();
-    private final DAO contactDAO = new ContactDAO();
+    private final EntityDAO userEntityDAO = new UserEntityDAO();
+    private final EntityDAO groupEntityDAO = new GroupEntityDAO();
+    private final EntityDAO contactEntityDAO = new ContactEntityDAO();
+    private final AdminDAO adminEntityDAO = new CustomAdminDAO();
 
-    public DAO getDAO(Class<? extends EntityAncestor> entityAncestor) throws CustomException {
+    public EntityDAO getEntityDAO(Class<? extends EntityAncestor> entityAncestor) throws CustomException {
         if (entityAncestor.equals(User.class)) {
-            return userDAO;
+            return userEntityDAO;
         } else if (entityAncestor.equals(Contact.class)) {
-            return contactDAO;
+            return contactEntityDAO;
         } else if (entityAncestor.equals(Group.class)) {
-            return groupDAO;
+            return groupEntityDAO;
         }
-        throw new CustomException("no such dao");
+        throw new CustomException("no such adminDAO");
+    }
+
+    public AdminDAO getAdminDAO() {
+        return adminEntityDAO;
     }
 
 }
