@@ -9,7 +9,7 @@ public class InactiveUsersCommand extends AbstractAdminCommand {
     }
 
     @Override
-    public synchronized Command clone() {
+    public synchronized Command safeCopy() {
         return new InactiveUsersCommand(this.id);
     }
 

@@ -9,7 +9,7 @@ public class ModifyEntityCommand extends AbstractEntityCommand {
     }
 
     @Override
-    public synchronized Command clone() {
+    public synchronized Command safeCopy() {
         return new ModifyEntityCommand(this.id);
     }
 

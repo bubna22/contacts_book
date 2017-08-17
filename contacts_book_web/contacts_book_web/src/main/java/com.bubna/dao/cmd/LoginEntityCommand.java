@@ -9,7 +9,7 @@ public class LoginEntityCommand extends AbstractEntityCommand {
     }
 
     @Override
-    public synchronized Command clone() {
+    public synchronized Command safeCopy() {
         return new LoginEntityCommand(this.id);
     }
 

@@ -9,7 +9,7 @@ public class UserGroupsAVGCountCommand extends AbstractAdminCommand {
     }
 
     @Override
-    public synchronized Command clone() {
+    public synchronized Command safeCopy() {
         return new UserGroupsAVGCountCommand(this.id);
     }
 

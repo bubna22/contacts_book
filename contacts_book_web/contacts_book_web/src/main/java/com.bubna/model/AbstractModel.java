@@ -19,7 +19,7 @@ abstract class AbstractModel implements Model {
 
     @Override
     public Command getCommand(String name) {
-        return cmds.get(name).clone();
+        return cmds.get(name).safeCopy();
     }
 
     @Override

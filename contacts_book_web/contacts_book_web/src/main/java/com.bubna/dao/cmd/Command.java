@@ -9,5 +9,5 @@ public interface Command {
     Object getResult();
     String getId();
 
-    Command clone();
+    Command safeCopy();
 }
