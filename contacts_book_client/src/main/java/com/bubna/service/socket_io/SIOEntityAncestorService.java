@@ -1,15 +1,13 @@
-package com.bubna.dao.socket_io;
+package com.bubna.service.socket_io;
 
-import com.bubna.dao.DAO;
-import com.bubna.dao.TemplateDAO;
+import com.bubna.service.Service;
+import com.bubna.service.TemplateService;
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
 import com.bubna.exceptions.NoSuchElementException;
 import com.bubna.model.entities.EntityAncestor;
 import com.bubna.model.entities.User;
 import com.bubna.utils.TransferObject;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -18,7 +16,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
-abstract class SIOEntityAncestorDAO implements TemplateDAO<String, EntityAncestor, Socket> {
+abstract class SIOEntityAncestorService implements TemplateService<String, EntityAncestor, Socket> {
 
     protected Socket source;
 
@@ -26,23 +24,22 @@ abstract class SIOEntityAncestorDAO implements TemplateDAO<String, EntityAncesto
     public User unlogin(User acc) throws InitException, IOException {throw new InitException("no such interface;");}
 
     @Override
-    public final DAO setUpdatedSource(Socket source) throws InitException {
+    public final Service setUpdatedSource(Socket source) throws InitException {
         this.source = source;
         return this;
     }
 
     @Override
     public final HashMap<String, EntityAncestor> read(User acc, Predicate<String> pKey, Predicate<EntityAncestor> pValue) throws InitException {
-        HashMap<String, EntityAncestor> dataReturned = new HashMap<>();
+        HashMap<String, EntityAncestor> dataReturned = null;
 
         try {
             DataInputStream dis = new DataInputStream(source.getInputStream());
-            boolean b = false;
-            while (!b) {
+            while (true) {
                 TransferObject transferObject = TransferObject.deserialize(dis.readUTF());
                 if (!transferObject.getWho().equals(getEntityName())) continue;
-                b = true;
                 dataReturned = getFromString(transferObject.getData());
+                break;
             }
 
             String[] keys = new String[dataReturned.size()];

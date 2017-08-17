@@ -1,6 +1,6 @@
 package com.bubna.model;
 
-import com.bubna.dao.DAOFactory;
+import com.bubna.service.ServiceFactory;
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
 import com.bubna.exceptions.NoSuchElementException;
@@ -14,15 +14,15 @@ import java.net.URISyntaxException;
 
 public class GroupModel extends AbstractModel<Group> {
 
-    public GroupModel(DAOFactory daoFactory, ObservablePart observable) {
-        this.daoFactory = daoFactory;
+    public GroupModel(ServiceFactory serviceFactory, ObservablePart observable) {
+        this.serviceFactory = serviceFactory;
         this.observable = observable;
     }
 
     @Override
     public void prepare() {
         try {
-            this.dao = daoFactory.getDAO(daoFactory.getSource(), Group.class);
+            this.service = serviceFactory.getService(serviceFactory.getSource(), Group.class);
         } catch (InitException | URISyntaxException | IncorrectInputException | IOException e) {
             applyException(e);
         }
@@ -36,10 +36,10 @@ public class GroupModel extends AbstractModel<Group> {
                 try {
                     UserGroupPair userGroupPair = new UserGroupPair(u, entity);
                     TransferObject transferObject = new TransferObject("group", "list", userGroupPair.serialize());
-                    dao.sendRequest(transferObject);
+                    service.sendRequest(transferObject);
                     synchronized (observable) {
                         observable.setChanged();
-                        observable.notifyObservers(dao.list(u, o -> true));
+                        observable.notifyObservers(service.list(u, o -> true));
                     }
                 } catch (InitException | NoSuchElementException | IOException e) {
                     applyException(e);

@@ -20,5 +20,8 @@ RUN git clone https://github.com/tada/pljava.git
 RUN export PGXS=/usr/lib/postgresql/9.5/lib/pgxs/src/makefiles/pgxs.mk
 RUN export LD_LIBRARY_PATH="/usr/lib/jvm/java-8-oracle/jre/lib/amd64/server"
 
+EXPOSE 5432
+
 ENTRYPOINT ["docker-entrypoint.sh"]
+CMD iptables -I INPUT -p tcp -m tcp --dport 5432 -j ACCEPT
 CMD ["postgres"]

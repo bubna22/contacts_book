@@ -1,4 +1,4 @@
-package com.bubna.dao;
+package com.bubna.service;
 
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
-public interface TemplateDAO <K, V, T> extends DAO<K, V, T> {
+public interface TemplateService<K, V, T> extends Service<K, V, T> {
     default void modify(User acc, K pk, V e) throws IOException, InitException, NoSuchElementException, IncorrectInputException {
         HashMap<K, V> values = new HashMap<>();
         values.put(pk, e);

@@ -1,9 +1,8 @@
 package com.bubna.model;
 
-import com.bubna.dao.DAOFactory;
+import com.bubna.service.ServiceFactory;
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
-import com.bubna.model.entities.Contact;
 import com.bubna.model.entities.User;
 import com.bubna.utils.TransferObject;
 
@@ -12,15 +11,15 @@ import java.net.URISyntaxException;
 
 public class UserModel extends AbstractModel<User> {
 
-    public UserModel(DAOFactory daoFactory, ObservablePart observable) {
-        this.daoFactory = daoFactory;
+    public UserModel(ServiceFactory serviceFactory, ObservablePart observable) {
+        this.serviceFactory = serviceFactory;
         this.observable = observable;
     }
 
     @Override
     public void prepare() {
         try {
-            this.dao = daoFactory.getDAO(daoFactory.getSource(), User.class);
+            this.service = serviceFactory.getService(serviceFactory.getSource(), User.class);
         } catch (InitException | URISyntaxException | IncorrectInputException | IOException e) {
             applyException(e);
         }
@@ -35,9 +34,9 @@ public class UserModel extends AbstractModel<User> {
             public void run() {
                 try {
                     TransferObject transferObject = new TransferObject("user", "login", entity.serialize());
-                    dao.sendRequest(transferObject);
+                    service.sendRequest(transferObject);
                     synchronized (observable) {
-                        observable.notifyObservers(dao.login(entity));
+                        observable.notifyObservers(service.login(entity));
                     }
                 } catch (InitException | IOException e) {
                     applyException(e);
@@ -54,9 +53,9 @@ public class UserModel extends AbstractModel<User> {
             public void run() {
                 try {
                     TransferObject transferObject = new TransferObject("user", "login", entity.serialize());
-                    dao.sendRequest(transferObject);
+                    service.sendRequest(transferObject);
                     synchronized (observable) {
-                        observable.notifyObservers(dao.unlogin(entity));
+                        observable.notifyObservers(service.unlogin(entity));
                     }
                 } catch (InitException | IOException e) {
                     applyException(e);

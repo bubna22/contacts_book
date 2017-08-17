@@ -1,4 +1,4 @@
-package com.bubna.dao;
+package com.bubna.service;
 
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
@@ -13,9 +13,9 @@ import java.util.function.Predicate;
 /**
  * Created by test on 17.07.2017.
  */
-public interface DAO<K, V, T> {
+public interface Service<K, V, T> {
     void sendRequest(TransferObject transferObject) throws IOException;
-    DAO setUpdatedSource(T source) throws InitException;
+    Service setUpdatedSource(T source) throws InitException;
     User login(User acc) throws InitException, IOException;
     User unlogin(User acc) throws InitException, IOException;
     V get(User acc, K pk) throws NoSuchElementException, InitException;

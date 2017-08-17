@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Context path="/contacts_book_web" docBase="contacts_book_web"
+         crossContext="true" reloadable="true" debug="1">
+    <Resource name="jdbc/postgres" auth="Container"
+              type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://172.18.0.3:5432/postgres"
+              username="postgres" password="" maxActive="20" maxIdle="10"
+              maxWait="-1"/>
+</Context>

@@ -1,7 +1,7 @@
-package com.bubna.dao.socket_io;
+package com.bubna.service.socket_io;
 
-import com.bubna.dao.DAO;
-import com.bubna.dao.DAOFactory;
+import com.bubna.service.Service;
+import com.bubna.service.ServiceFactory;
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
 import com.bubna.model.entities.Contact;
@@ -16,22 +16,22 @@ import java.net.URISyntaxException;
 /**
  * Created by test on 17.07.2017.
  */
-public enum SIODAOFactory implements DAOFactory<Socket> {
+public enum SIOServiceFactory implements ServiceFactory<Socket> {
 
     INSTANCE;
 
-    private DAO contactDAO = new SIOContactDAO();
-    private DAO groupDAO = new SIOGroupDAO();
-    private DAO userDAO = new SIOUserDAO();
+    private Service contactService = new SIOContactService();
+    private Service groupService = new SIOGroupService();
+    private Service userService = new SIOUserService();
 
     @Override
-    public synchronized DAO getDAO(Socket source, Class<? extends EntityAncestor> daoType) throws IncorrectInputException, InitException {
+    public synchronized Service getService(Socket source, Class<? extends EntityAncestor> daoType) throws IncorrectInputException, InitException {
         if (daoType.equals(Contact.class)) {
-            return contactDAO.setUpdatedSource(source);
+            return contactService.setUpdatedSource(source);
         } else if (daoType.equals(Group.class)) {
-            return groupDAO.setUpdatedSource(source);
+            return groupService.setUpdatedSource(source);
         } else if (daoType.equals(User.class)) {
-            return userDAO.setUpdatedSource(source);
+            return userService.setUpdatedSource(source);
         }
         throw new IncorrectInputException("Invalid format of requested data");
     }

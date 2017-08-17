@@ -1,4 +1,4 @@
-package com.bubna.dao.socket_io;
+package com.bubna.service.socket_io;
 
 import com.bubna.exceptions.InitException;
 import com.bubna.model.entities.User;
@@ -7,7 +7,7 @@ import com.bubna.utils.TransferObject;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-final class SIOUserDAO extends SIOEntityAncestorDAO {
+final class SIOUserService extends SIOEntityAncestorService {
 
     @Override
     public final User login(User acc) throws InitException, IOException {

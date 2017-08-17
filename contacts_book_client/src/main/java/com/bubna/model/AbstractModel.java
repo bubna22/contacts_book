@@ -1,7 +1,7 @@
 package com.bubna.model;
 
-import com.bubna.dao.DAO;
-import com.bubna.dao.DAOFactory;
+import com.bubna.service.Service;
+import com.bubna.service.ServiceFactory;
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
 import com.bubna.exceptions.NoSuchElementException;
@@ -9,20 +9,19 @@ import com.bubna.model.entities.EntityAncestor;
 import com.bubna.model.entities.User;
 
 import java.io.IOException;
-import java.util.function.Predicate;
 
 abstract class AbstractModel <V extends EntityAncestor> implements Model<V> {
     protected ObservablePart observable;
-    protected DAOFactory daoFactory;
-    protected DAO dao;
+    protected ServiceFactory serviceFactory;
+    protected Service service;
 
     @Override
-    public void rem(User u, V entity) {
+    public void rem(User user, V entity) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    dao.modify(u, entity.getName(), null);
+                    service.modify(user, entity.getName(), null);
                 } catch (InitException | IncorrectInputException | IOException | NoSuchElementException e) {
                     applyException(e);
                 }
@@ -34,12 +33,12 @@ abstract class AbstractModel <V extends EntityAncestor> implements Model<V> {
     public void list(User u, V entity) {}
 
     @Override
-    public void modify(User u, V entity) {
+    public void modify(User user, V entity) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    dao.modify(u, entity.getName(), entity);
+                    service.modify(user, entity.getName(), entity);
                 } catch (InitException | IncorrectInputException | IOException | NoSuchElementException e) {
                     applyException(e);
                 }

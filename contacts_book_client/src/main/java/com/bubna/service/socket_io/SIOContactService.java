@@ -1,4 +1,4 @@
-package com.bubna.dao.socket_io;
+package com.bubna.service.socket_io;
 
 import com.bubna.exceptions.InitException;
 import com.bubna.model.entities.Contact;
@@ -7,15 +7,13 @@ import com.bubna.model.entities.User;
 import com.bubna.utils.TransferObject;
 import com.bubna.utils.UserContactPair;
 import com.bubna.utils.Utils;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-final class SIOContactDAO extends SIOEntityAncestorDAO {
+final class SIOContactService extends SIOEntityAncestorService {
 
     @Override
     protected String getEntityName() {

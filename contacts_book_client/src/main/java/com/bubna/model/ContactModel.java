@@ -1,7 +1,7 @@
 package com.bubna.model;
 
-import com.bubna.dao.DAO;
-import com.bubna.dao.DAOFactory;
+import com.bubna.service.Service;
+import com.bubna.service.ServiceFactory;
 import com.bubna.exceptions.IncorrectInputException;
 import com.bubna.exceptions.InitException;
 import com.bubna.exceptions.NoSuchElementException;
@@ -11,51 +11,49 @@ import com.bubna.model.entities.User;
 import com.bubna.utils.TransferObject;
 import com.bubna.utils.UserContactPair;
 import com.bubna.utils.Utils;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class ContactModel extends AbstractModel<Contact> {
 
-    public ContactModel(DAOFactory daoFactory, ObservablePart observable) {
-        this.daoFactory = daoFactory;
+    public ContactModel(ServiceFactory serviceFactory, ObservablePart observable) {
+        this.serviceFactory = serviceFactory;
         this.observable = observable;
     }
 
     @Override
     public void prepare() {
         try {
-            this.dao = daoFactory.getDAO(daoFactory.getSource(), Contact.class);
+            this.service = serviceFactory.getService(serviceFactory.getSource(), Contact.class);
         } catch (InitException | URISyntaxException | IncorrectInputException | IOException e) {
             applyException(e);
         }
     }
 
     @Override
-    public void list(User u, Contact entity) {
+    public void list(User user, Contact entity) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     if (entity.getGroupName() != null && entity.getGroupName().equals("")) {
-                        DAO d1 = daoFactory.getDAO(daoFactory.getSource(), Group.class);
+                        Service groupService = serviceFactory.getService(serviceFactory.getSource(), Group.class);
                         TransferObject transferObject =
                                 new TransferObject("group", "get", new Group(entity.getGroupName(), null).serialize());
-                        d1.sendRequest(transferObject);
-                        d1.get(u, entity.getGroupName());
+                        groupService.sendRequest(transferObject);
+                        groupService.get(user, entity.getGroupName());
                     }
 
-                    UserContactPair customPair = new UserContactPair(u, entity);
+                    UserContactPair customPair = new UserContactPair(user, entity);
 
                     TransferObject transferObject = new TransferObject("contact", "list", Utils.INSTANCE.getGson().toJson(customPair));
                     Utils.INSTANCE.putGson();
-                    dao.sendRequest(transferObject);
+                    service.sendRequest(transferObject);
                     synchronized (observable) {
                         observable.setChanged();
                         observable.notifyObservers(
-                                dao.list(u, o -> (entity.getGroupName() == null) ||
+                                service.list(user, o -> (entity.getGroupName() == null) ||
                                         (((Contact) o).getGroupName() != null &&
                                                 entity.getGroupName().equals(((Contact) o).getGroupName()))
                                 )
