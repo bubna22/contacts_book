@@ -52,11 +52,15 @@
                 <configuration>
                     <images>
                         <image>
+                            <alias>bubna_docker_tomcat</alias>
                             <name>tomcat</name>
                             <build>
                                 <dockerFileDir>${project.basedir}/tomcat_docker</dockerFileDir>
                             </build>
                             <run>
+                                <namingStrategy>
+                                    alias
+                                </namingStrategy>
                                 <network>
                                     <mode>custom</mode>
                                     <name>skynet</name>
@@ -65,10 +69,14 @@
                         </image>
                         <image>
                             <name>postgresql</name>
+                            <alias>bubna_docker_postgresql</alias>
                             <build>
                                 <dockerFileDir>${project.basedir}/postgresql_docker</dockerFileDir>
                             </build>
                             <run>
+                                <namingStrategy>
+                                    alias
+                                </namingStrategy>
                                 <ports>
                                     <port>host.port:5432</port>
                                     <port>5432:5432</port>
