@@ -1,19 +1,13 @@
 package com.bubna.dao;
 
-import com.bubna.dao.handler.RSContactHandler;
-import com.bubna.dao.map.ContactMap;
-import com.bubna.dao.map.UserMap;
 import com.bubna.exception.CustomException;
 import com.bubna.model.entity.Contact;
+import com.bubna.model.entity.Group;
 import com.bubna.model.entity.User;
-import com.bubna.view.MainServlet;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 
-import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.concurrent.ExecutionException;
 
 public class ContactEntityDAO extends AbstractEntityDAO<Contact> {
 
@@ -21,51 +15,65 @@ public class ContactEntityDAO extends AbstractEntityDAO<Contact> {
         super();
     }
 
+    private void auth(User u) throws CustomException {
+        Criteria criteria = session.createCriteria(User.class);
+        User outputUser = (User) criteria
+                .add(Restrictions.eq("login", u.getLogin()))
+                .uniqueResult();
+        if (outputUser == null) throw new CustomException("auth failed");
+    }
+
     @Override
     public void create() throws CustomException {
-        update();
+        //check access
+        auth((User) extraData.get("user"));
+        Contact inputContact = (Contact) extraData.get("entity");
+        session.save(inputContact);
     }
 
     @Override
     public void delete() throws CustomException {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT contact_modify( ?, ?, ? );");
-            preparedStatement.setObject(1, new UserMap((User) extraData.get("user")));
-            Contact inputContact = (Contact) extraData.get("entity");
-            preparedStatement.setObject(2, inputContact.getName());
-            preparedStatement.setObject(3, null);
+        //check access
+        auth((User) extraData.get("user"));
 
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while creating contact":e.getMessage());
-        }
+        Contact inputContact = (Contact) extraData.get("entity");
+        Criteria criteria = session.createCriteria(Contact.class);
+        Contact outputContact = (Contact) criteria
+                .add(Restrictions.eq("name", inputContact.getName()))
+                .uniqueResult();
+        session.delete(outputContact);
     }
 
     @Override
     public void update() throws CustomException {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT contact_modify( ?, ?, ? );");
-            preparedStatement.setObject(1, new UserMap((User) extraData.get("user")));
-            Contact inputContact = (Contact) extraData.get("entity");
-            preparedStatement.setObject(2, inputContact.getName());
-            preparedStatement.setObject(3, new ContactMap(inputContact));
+        //check access
+        auth((User) extraData.get("user"));
 
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while creating contact":e.getMessage());
+        Contact inputContact = (Contact) extraData.get("entity");
+        Criteria cCriteria = session.createCriteria(Contact.class);
+        Contact outputContact = (Contact) cCriteria
+                .add(Restrictions.eq("name", inputContact.getName()))
+                .uniqueResult();
+        outputContact.setEmail(inputContact.getEmail());
+        outputContact.setTelegram(inputContact.getTelegram());
+        outputContact.setNum(inputContact.getNum());
+        outputContact.setSkype(inputContact.getSkype());
+        if (inputContact.getGroup().getName().equals("")) inputContact.getGroup().setName(null);
+        if (inputContact.getGroup().getName() != null) {
+            Criteria gCriteria = session.createCriteria(Group.class);
+            Group group = (Group) gCriteria
+                    .add(Restrictions.eq("name", inputContact.getGroup().getName()))
+                    .uniqueResult();
+            if (group == null) throw new CustomException("no such group");
+            outputContact.setGroup(group);
         }
     }
 
     @Override
     public Collection<Contact> list() throws CustomException {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT data FROM contact_list( ? ) as data;");
-            preparedStatement.setObject(1, new UserMap((User) extraData.get("user")));
-
-            RSContactHandler contactHandler = new RSContactHandler(preparedStatement.executeQuery());
-            return contactHandler.call();
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while creating contact":e.getMessage());
-        }
+        //check access
+        auth((User) extraData.get("user"));
+        //get contacts list
+        return session.createQuery("from Contact", Contact.class).list();
     }
 }

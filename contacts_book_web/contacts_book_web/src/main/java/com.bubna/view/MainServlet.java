@@ -65,7 +65,11 @@ public class MainServlet extends AbstractServlet {
             this.resp = resp;
             try {
                 waitAnswer("list", () -> {
-                    contactController.addInput("user", new User(user, null, "1"));
+                    User u = new User();
+                    u.setLogin(user);
+                    u.setPass(null);
+                    u.setIp("1");
+                    contactController.addInput("user", u);
                     contactController.listen("list");
                 });
             } catch (InterruptedException e) {
@@ -78,7 +82,11 @@ public class MainServlet extends AbstractServlet {
         } else if (req.getRequestURL().toString().endsWith("groups")) {
             try {
                 waitAnswer("list", () -> {
-                    groupController.addInput("user", new User(user, null, "1"));
+                    User u = new User();
+                    u.setLogin(user);
+                    u.setPass(null);
+                    u.setIp("1");
+                    groupController.addInput("user", u);
                     groupController.listen("list");
                 });
             } catch (InterruptedException e) {
@@ -113,18 +121,31 @@ public class MainServlet extends AbstractServlet {
         if (entityType.equals("contact")) {
             String name = req.getParameter("c_name");
             String email = req.getParameter("c_email");
-            Integer num = req.getParameter("c_num")==null?0:Integer.parseInt(req.getParameter("c_num"));
+            Integer num = req.getParameter("c_num")==null||req.getParameter("c_num").equals("")?0:Integer.parseInt(req.getParameter("c_num"));
             String skype = req.getParameter("c_skype");
             String telegram = req.getParameter("c_telegram");
             String groupName = req.getParameter("g_name");
 
             try {
                 waitAnswer(action, () -> {
-                    synchronized (contactController) {
-                        contactController.addInput("user", new User(user, null, "1"));
-                        contactController.addInput("entity", new Contact(name, email, num, skype, telegram, groupName));
-                        contactController.listen(action);
+                    User u = new User();
+                    u.setLogin(user);
+                    u.setPass(null);
+                    u.setIp("1");
+                    contactController.addInput("user", u);
+                    Contact contact = new Contact();
+                    contact.setName(name);
+                    contact.setEmail(email);
+                    contact.setNum(num);
+                    contact.setSkype(skype);
+                    contact.setTelegram(telegram);
+                    if (groupName != null && !groupName.equals("")) {
+                        Group group = new Group();
+                        group.setName(groupName);
+                        contact.setGroup(group);
                     }
+                    contactController.addInput("entity", contact);
+                    contactController.listen(action);
                 });
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -136,11 +157,16 @@ public class MainServlet extends AbstractServlet {
 
             try {
                 waitAnswer(action, () -> {
-                    synchronized (contactController) {
-                        groupController.addInput("user", new User(user, null, "1"));
-                        groupController.addInput("entity", new Group(name, color));
-                        groupController.listen(action);
-                    }
+                    User u = new User();
+                    u.setLogin(user);
+                    u.setPass(null);
+                    u.setIp("1");
+                    groupController.addInput("user", u);
+                    Group group = new Group();
+                    group.setName(name);
+                    group.setColor(color);
+                    groupController.addInput("entity", group);
+                    groupController.listen(action);
                 });
             } catch (InterruptedException e) {
                 e.printStackTrace();

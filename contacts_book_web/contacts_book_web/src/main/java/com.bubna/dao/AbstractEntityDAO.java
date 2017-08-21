@@ -1,6 +1,8 @@
 package com.bubna.dao;
 
 import com.bubna.exception.CustomException;
+import com.bubna.util.HibernateUtil;
+import org.hibernate.Session;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -14,7 +16,7 @@ import java.util.HashMap;
 
 abstract class AbstractEntityDAO<V> implements EntityDAO<V> {
 
-    Connection connection;
+    Session session;
     HashMap<String, Object> extraData;
 
     public AbstractEntityDAO() {
@@ -40,23 +42,14 @@ abstract class AbstractEntityDAO<V> implements EntityDAO<V> {
 
     @Override
     public void prepare() throws CustomException {
-        try {
-            InitialContext ctx = new InitialContext();
-            Context initCtx = (Context) ctx.lookup("java:/comp/env");
-            DataSource ds = (DataSource) initCtx.lookup("jdbc/postgres");
-            connection = ds.getConnection();
-        } catch (NamingException | SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while getting connection":e.getMessage());
-        }
+        session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
     }
 
     @Override
     public void close() throws CustomException {
+        session.getTransaction().commit();
         extraData.clear();
-        try {
-            if (connection != null && connection.isClosed()) connection.close();
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while closing connection":e.getMessage());
-        }
+        if (session != null && session.isOpen()) session.close();
     }
 }

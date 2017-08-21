@@ -49,7 +49,7 @@
                                     </div></td>
                                     <td onclick="$('#controls_contact_${contact.name}').removeClass('hidden')">
                                         <div class="input-group input-group-sm">
-                                        <input onchange="onEdit(document.getElementById('gName_contact_${contact.name}'))" id="gName_contact_${contact.name}" type="text" class="form-control" value="${contact.groupName}" placeholder="group name">
+                                        <input onchange="onEdit(document.getElementById('gName_contact_${contact.name}'))" id="gName_contact_${contact.name}" type="text" class="form-control" value="${contact.group.name}" placeholder="group name">
                                     </div></td>
                                     <td colspan="1" class="hidden" id="controls_contact_${contact.name}">
                                         <div class="btn-group">

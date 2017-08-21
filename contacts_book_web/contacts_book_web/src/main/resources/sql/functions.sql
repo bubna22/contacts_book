@@ -1,29 +1,8 @@
-CREATE TYPE group_type AS (
-    group_name VARCHAR(1024),
-    group_color INTEGER
-);
-
-CREATE TYPE contact_type AS (
-    contact_name VARCHAR(1024),
-    contact_email VARCHAR(1024),
-    contact_telegram VARCHAR(1024),
-    contact_num INTEGER,
-    contact_skype VARCHAR(1024),
-    group_name VARCHAR(1024)
-);
-
-CREATE TYPE user_type AS (
-    user_login VARCHAR(1024),
-    user_pass VARCHAR(1024),
-    user_ip VARCHAR(20)
-);
-
-
-CREATE OR REPLACE FUNCTION login(var_user user_type) RETURNS SETOF user_type AS $$
+CREATE OR REPLACE FUNCTION login(var_user users) RETURNS SETOF users AS $$
 DECLARE
     temp_login varchar;
     temp_rv integer;
-    dataReturned user_type%rowtype;
+    dataReturned users%rowtype;
 BEGIN
     SELECT user_login, user_row_version
         INTO temp_login, temp_rv
@@ -41,7 +20,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION unlogin(var_user user_type) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION unlogin(var_user users) RETURNS void AS $$
 BEGIN
     UPDATE users
         SET user_ip = NULL
@@ -49,7 +28,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION check_access(var_user user_type) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION check_access(var_user users) RETURNS void AS $$
 DECLARE
     temp_login VARCHAR;
 BEGIN
@@ -61,7 +40,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION contact_modify(var_user user_type, var_contact_name VARCHAR, var_contact contact_type) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION contact_modify(var_user users, var_contact_name VARCHAR, var_contact contacts) RETURNS void AS $$
 DECLARE
 temp_contact_name VARCHAR;
 temp_contact_id INTEGER;
@@ -94,9 +73,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION contact_list(var_user user_type) RETURNS SETOF contact_type AS $$
+CREATE OR REPLACE FUNCTION contact_list(var_user users) RETURNS SETOF contact_type AS $$
 DECLARE
-    dataReturned contact_type%rowtype;
+    dataReturned contacts%rowtype;
 BEGIN
     PERFORM check_access(var_user);
     FOR dataReturned IN
@@ -121,7 +100,7 @@ $$ LANGUAGE plpgsql;
 
 -------------------------------------------
 
-CREATE OR REPLACE FUNCTION group_modify(var_user user_type, var_group_name VARCHAR, var_group group_type) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION group_modify(var_user users, var_group_name VARCHAR, var_group groups) RETURNS void AS $$
 DECLARE
     temp_group_name VARCHAR;
     temp_group_id INTEGER;
@@ -145,9 +124,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION group_list(var_user user_type) RETURNS SETOF group_type AS $$
+CREATE OR REPLACE FUNCTION group_list(var_user users) RETURNS SETOF group_type AS $$
 DECLARE
-    dataReturned group_type%rowtype;
+    dataReturned groups%rowtype;
 BEGIN
     PERFORM check_access(var_user);
     FOR dataReturned IN

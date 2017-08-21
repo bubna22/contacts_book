@@ -50,7 +50,10 @@ public class LoginServlet extends AbstractServlet {
             return;
         }
 
-        User u = new User(login, pass, "1");
+        User u = new User();
+        u.setLogin(login);
+        u.setPass(pass);
+        u.setIp("1");
 
         try {
             waitAnswer("login", () -> {

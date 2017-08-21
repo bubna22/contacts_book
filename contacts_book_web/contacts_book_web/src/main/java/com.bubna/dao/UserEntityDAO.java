@@ -1,11 +1,9 @@
 package com.bubna.dao;
 
-import com.bubna.dao.map.UserMap;
 import com.bubna.exception.CustomException;
 import com.bubna.model.entity.User;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Restrictions;
 
 public class UserEntityDAO extends AbstractEntityDAO<User> {
 
@@ -15,26 +13,23 @@ public class UserEntityDAO extends AbstractEntityDAO<User> {
 
     @Override
     public void delete() throws CustomException {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT unlogin( ? );");
-            preparedStatement.setObject(1, new UserMap((User) extraData.get("user")));
-
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while creating contact":e.getMessage());
-        }
+        User inputUser = (User) extraData.get("user");
+        Criteria criteria = session.createCriteria(User.class);
+        User outputUser = (User) criteria
+                .add(Restrictions.eq("login", inputUser.getLogin()))
+                .uniqueResult();
+        outputUser.setIp(null);//Transfer state
     }
 
     @Override
     public void update() throws CustomException {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT login( ? );");
-            preparedStatement.setObject(1, new UserMap((User) extraData.get("user")));
-
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while creating contact":e.getMessage());
-        }
+        User inputUser = (User) extraData.get("user");
+        Criteria criteria = session.createCriteria(User.class);
+        User outputUser = (User) criteria
+                .add(Restrictions.eq("login", inputUser.getLogin()))
+                .add(Restrictions.eq("pass", inputUser.getPass()))
+                .uniqueResult();
+        outputUser.setIp("1");
     }
 
 }

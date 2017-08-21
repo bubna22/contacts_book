@@ -1,23 +1,40 @@
 package com.bubna.model.entity;
 
+import javax.persistence.*;
+
 /**
  * Created by test on 11.07.2017.
  */
+@Entity
+@Table(name = "contacts")
 public class Contact extends EntityAncestor {
 
+    @Id
+    @Column(name = "contact_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    @Column(name = "contact_name")
+    private String name;
+    @Column(name = "contact_email")
     private String email;
+    @Column(name = "contact_num")
     private Integer num;
+    @Column(name = "contact_skype")
     private String skype;
+    @Column(name = "contact_telegram")
     private String telegram;
-    private String groupName;
+    @ManyToOne(fetch=FetchType.EAGER)//This need for servlet. it is waiting for groupname
+    @JoinColumn(name = "group_id")
+    private Group group;
 
-    public Contact(String name, String email, Integer num, String skype, String telegram, String groupName) {
-        this.name = name;
-        this.email = email;
-        this.num = num;
-        this.skype = skype;
-        this.telegram = telegram;
-        this.groupName = groupName;
+    public Contact() {}
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getEmail() {
@@ -36,8 +53,12 @@ public class Contact extends EntityAncestor {
         return telegram;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public void setName(String name) {
@@ -60,7 +81,7 @@ public class Contact extends EntityAncestor {
         this.telegram = telegram;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }
