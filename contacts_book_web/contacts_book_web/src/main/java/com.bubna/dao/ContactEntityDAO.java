@@ -28,7 +28,7 @@ public class ContactEntityDAO extends AbstractEntityDAO<Contact> {
         //check access
         auth((User) extraData.get("user"));
         Contact inputContact = (Contact) extraData.get("entity");
-        session.save(inputContact);
+        session.persist(inputContact);
     }
 
     @Override

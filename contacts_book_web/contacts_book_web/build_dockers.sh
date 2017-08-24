@@ -8,4 +8,4 @@ OUTPUT="$(sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddres
 echo "ip of postgresql container is ${OUTPUT}"
 OUTPUT="$(sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' bubna_docker_tomcat)"
 echo "ip of tomcat container is ${OUTPUT}"
-echo "change pom.xml, context.xml, maven's settings.xml (i don't where is it on your pc, sorry)"
+echo "change pom.xml, context.xml, maven's settings.xml (i don't know where is it on your pc, sorry)"

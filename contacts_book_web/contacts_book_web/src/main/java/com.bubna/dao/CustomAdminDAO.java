@@ -1,119 +1,85 @@
 package com.bubna.dao;
 
 import com.bubna.exception.CustomException;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.hibernate.Session;
+import org.hibernate.query.NativeQuery;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class CustomAdminDAO implements AdminDAO {
 
-    private Connection connection;
+    private Session session;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     CustomAdminDAO() {
-        super();
     }
 
     @Override
     public void prepare() throws CustomException {
-        try {
-            InitialContext ctx = new InitialContext();
-            Context initCtx = (Context) ctx.lookup("java:/comp/env");
-            DataSource ds = (DataSource) initCtx.lookup("jdbc/postgres");
-            connection = ds.getConnection();
-        } catch (NamingException | SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while getting connection":e.getMessage());
-        }
+        session = (Session) applicationContext.getBean("session");
     }
 
     @Override
     public void close() throws CustomException {
-        try {
-            if (connection != null && connection.isClosed()) connection.close();
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while closing connection":e.getMessage());
-        }
+        if (session != null && session.isOpen()) session.close();
     }
 
-    public Integer userCount() throws CustomException {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users_count;");
-            ResultSet rs = preparedStatement.executeQuery();
-            rs.next();
-            return rs.getInt(1);
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while creating contact":e.getMessage());
-        }
+    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    public BigInteger userCount() throws CustomException {
+        NativeQuery nq = session.createSQLQuery("SELECT * FROM users_count;");
+        return (BigInteger) nq.getSingleResult();
     }
 
+    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
     public ArrayList<String> userContactsCount() throws CustomException {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM user_contacts_count;");
-            ResultSet rs = preparedStatement.executeQuery();
-            ArrayList<String> dataReturned = new ArrayList<>();
-            while (rs.next()) {
-                dataReturned.add(rs.getString(1) + " - " + rs.getInt(2));
-            }
-            return dataReturned;
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while creating contact":e.getMessage());
+        NativeQuery nq = session.createSQLQuery("SELECT * FROM user_contacts_count;");
+        ArrayList<Object[]> list = (ArrayList<Object[]>) nq.getResultList();
+        ArrayList<String> dataReturned = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            Object[] cols = list.get(i);
+            dataReturned.add(cols[0] + " - " + cols[1]);
         }
+        return dataReturned;
     }
 
+    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
     public ArrayList<String> userGroupsCount() throws CustomException {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM user_groups_count;");
-            ResultSet rs = preparedStatement.executeQuery();
-            ArrayList<String> dataReturned = new ArrayList<>();
-            while (rs.next()) {
-                dataReturned.add(rs.getString(1) + " - " + rs.getInt(2));
-            }
-            return dataReturned;
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while creating contact":e.getMessage());
+        NativeQuery nq = session.createSQLQuery("SELECT * FROM user_groups_count;");
+        ArrayList<Object[]> list = (ArrayList<Object[]>) nq.getResultList();
+        ArrayList<String> dataReturned = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            Object[] cols = list.get(i);
+            dataReturned.add(cols[0] + " - " + cols[1]);
         }
+        return dataReturned;
     }
 
-    public Integer userAVGGroupsCount() throws CustomException {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM avg_users_in_group_count;");
-            ResultSet rs = preparedStatement.executeQuery();
-            rs.next();
-            return rs.getInt(1);
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while creating contact":e.getMessage());
-        }
+    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    public BigDecimal userAVGGroupsCount() throws CustomException {
+        NativeQuery nq = session.createSQLQuery("SELECT * FROM avg_users_in_group_count;");
+        return (BigDecimal) nq.getSingleResult();
     }
 
-    public Integer userAVGContactsCount() throws CustomException {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM avg_contacts_by_user_count;");
-            ResultSet rs = preparedStatement.executeQuery();
-            rs.next();
-            return rs.getInt(1);
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while creating contact":e.getMessage());
-        }
+    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    public BigDecimal userAVGContactsCount() throws CustomException {
+        NativeQuery nq = session.createSQLQuery("SELECT * FROM avg_contacts_by_user_count;");
+        return (BigDecimal) nq.getSingleResult();
     }
 
+    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
     public ArrayList<String> inactiveUsers() throws CustomException {
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM get_inactive_users;");
-            ResultSet rs = preparedStatement.executeQuery();
-            ArrayList<String> dataReturned = new ArrayList<>();
-            while (rs.next()) {
-                dataReturned.add(rs.getString(2));
-            }
-            return dataReturned;
-        } catch (SQLException e) {
-            throw new CustomException(e.getMessage()==null?"error while creating contact":e.getMessage());
+        NativeQuery nq = session.createSQLQuery("SELECT * FROM get_inactive_users;");
+        ArrayList<Object[]> list = (ArrayList<Object[]>) nq.getResultList();
+        ArrayList<String> dataReturned = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            Object[] cols = list.get(i);
+            dataReturned.add(cols[1].toString());
         }
+        return dataReturned;
     }
-
 }

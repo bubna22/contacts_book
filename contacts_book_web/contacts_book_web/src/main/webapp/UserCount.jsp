@@ -1,9 +1,6 @@
 <%@ taglib prefix = "sql" uri = "http://java.sun.com/jsp/jstl/sql" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<jsp:useBean id="jspBean"
-      class="com.bubna.view.JSPBean"></jsp:useBean>
-
 <html>
     <head>
         <title>DB Test</title>
@@ -11,8 +8,7 @@
     <body>
 
         <p>user count:
-            <jsp:setProperty  name="jspBean" property="listen" value="count"/>
-            <jsp:getProperty name="jspBean" property="answer" />
+            ${count}
         </p>
 
     </body>

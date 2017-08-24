@@ -2,13 +2,15 @@ package com.bubna.dao;
 
 import com.bubna.exception.CustomException;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 public interface AdminDAO extends DAO {
-    Integer userCount() throws CustomException;
+    BigInteger userCount() throws CustomException;
     ArrayList<String> userContactsCount() throws CustomException;
     ArrayList<String> userGroupsCount() throws CustomException;
-    Integer userAVGGroupsCount() throws CustomException;
-    Integer userAVGContactsCount() throws CustomException;
+    BigDecimal userAVGGroupsCount() throws CustomException;
+    BigDecimal userAVGContactsCount() throws CustomException;
     ArrayList<String> inactiveUsers() throws CustomException;
 }

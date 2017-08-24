@@ -1,7 +1,4 @@
-<%@ taglib prefix = "sql" uri = "http://java.sun.com/jsp/jstl/sql" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<jsp:useBean id="jspBean"
-      class="com.bubna.view.JSPBean"></jsp:useBean>
 
 <jsp:include page="/header.jsp" />
 <%@ page import="java.util.ArrayList" %>

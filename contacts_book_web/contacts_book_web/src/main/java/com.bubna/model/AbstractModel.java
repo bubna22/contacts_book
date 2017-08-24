@@ -2,19 +2,18 @@ package com.bubna.model;
 
 import com.bubna.dao.EntityDAO;
 import com.bubna.dao.cmd.Command;
-import com.bubna.util.Answer;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import java.util.HashMap;
 
 abstract class AbstractModel implements Model {
-    final HashMap<String, Command> cmds;
-    private final ObservablePart observable;
-    private final EntityDAO entityDao;
+    HashMap<String, Command> cmds;
+    EntityDAO entityDao;
+    @Autowired
+    ApplicationContext applicationContext;
 
-    AbstractModel(ObservablePart observable, EntityDAO entityDao) {
+    AbstractModel() {
         cmds = new HashMap<>();
-        this.observable = observable;
-        this.entityDao = entityDao;
     }
 
     @Override
@@ -23,12 +22,9 @@ abstract class AbstractModel implements Model {
     }
 
     @Override
-    public void executeCommand(Command commandObject) {
-        observable.setChanged();
+    public Object executeCommand(Command commandObject) {
         commandObject.setDAO(entityDao);
-        synchronized (entityDao) {
-            commandObject.execute();
-            observable.notifyObservers(new Answer(commandObject.getId(), commandObject.getResult()));
-        }
+        commandObject.execute();
+        return commandObject.getResult();
     }
 }

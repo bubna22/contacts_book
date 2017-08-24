@@ -2,6 +2,8 @@ package com.bubna.dao.cmd;
 
 import com.bubna.exception.CustomException;
 
+import javax.servlet.ServletException;
+
 public class ListEntityCommand extends AbstractEntityCommand {
 
     public ListEntityCommand(String id) {
