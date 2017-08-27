@@ -9,5 +9,6 @@ public interface EntityDAO<V> extends DAO {
     void create() throws CustomException;
     void delete() throws CustomException;
     void update() throws CustomException;
+    V get() throws CustomException;
     Collection<V> list() throws CustomException;
 }

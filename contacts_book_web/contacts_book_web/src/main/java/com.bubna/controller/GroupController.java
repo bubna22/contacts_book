@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
+
 @Controller
 @Import(ModelConfig.class)
 public class GroupController {
@@ -27,9 +29,9 @@ public class GroupController {
     }
 
     @RequestMapping(value = "/groups", method = RequestMethod.GET)
-    public String groupsGet(@CookieValue(value = "user") String userName, Model model) {
+    public String groupsGet(Principal principal, Model model) {
         User user = (User) applicationContext.getBean("user");
-        user.setLogin(userName);
+        user.setLogin(principal.getName());
         com.bubna.model.Model groupModel = getGroupModel();
         Command cmd = groupModel.getCommand("list");
         cmd.addInput("user", user);
@@ -44,19 +46,18 @@ public class GroupController {
             @RequestParam(value = "action") String action,
             @RequestParam(value = "g_name") String name,
             @RequestParam(value = "g_color", required = false) Integer color,
-            @CookieValue(value = "user") String userName,
-            Model model) {
+            Principal principal, Model model) {
         User user = (User) applicationContext.getBean("user");
-        user.setLogin(userName);
+        user.setLogin(principal.getName());
         Group group = (Group) applicationContext.getBean("group");
         group.setName(name);
-        group.setColor(color);
+        if (color != null) group.setColor(color);
         com.bubna.model.Model groupModel = getGroupModel();
         Command cmd = groupModel.getCommand(action);
         cmd.addInput("user", user);
         cmd.addInput("entity", group);
-        if (!groupModel.executeCommand(cmd).equals(Boolean.TRUE)) return "redirect:/";
-        return "redirect:/contacts";
+        if (!groupModel.executeCommand(cmd).equals(Boolean.TRUE)) return "redirect:/main";
+        return "redirect:/groups";
     }
 
 }

@@ -6,8 +6,13 @@ import javax.annotation.PostConstruct;
 
 public class GroupModel extends EntityModel {
 
+    GroupModel() {
+        super();
+    }
+
     @PostConstruct
-    private void construct() {
+    public void construct() {
+        super.construct();
         this.entityDao = (EntityDAO) applicationContext.getBean("groupDAO");
     }
 

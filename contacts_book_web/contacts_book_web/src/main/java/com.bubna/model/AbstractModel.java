@@ -4,6 +4,7 @@ import com.bubna.dao.EntityDAO;
 import com.bubna.dao.cmd.Command;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+
 import java.util.HashMap;
 
 abstract class AbstractModel implements Model {
@@ -18,7 +19,7 @@ abstract class AbstractModel implements Model {
 
     @Override
     public Command getCommand(String name) {
-        return cmds.get(name).safeCopy();
+        return cmds.get(name);
     }
 
     @Override

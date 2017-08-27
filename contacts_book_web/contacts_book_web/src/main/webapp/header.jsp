@@ -1,3 +1,4 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,29 +52,28 @@
 
                         for (int i = 0; i < cookies.length; i++) {
                             cookie = cookies[i];
-                            if (cookie.getName().equals("user")) {
+                            if (cookie.getName().equals("user")) {%>
+
+                                    <ul class="nav navbar-nav navbar-right"><li><a href="#"> Welcome
+                                      ${pageContext.request.userPrincipal.name}
+                                   </a></li></ul>
+                                <%
                                 loggedIn = true;
-                                out.print(
-                                    "<ul class=\"nav navbar-nav navbar-right\"><li><a href=\"#\"> Welcome " +
-                                      cookie.getValue() +
-                                    "</a></li></ul>"
-                                );
                                 break;
                             }
                         }
-                     }
-                     if (!loggedIn) {
-                        out.print(
-                            "<form class=\"navbar-form navbar-left\" action=\"login\" method=\"POST\">" +
-                            "<div class=\"form-group\">" +
-                            "<input type=\"text\" class=\"form-control\" name=\"username\" placeholder=\"login\">" +
-                            "<input type=\"password\" class=\"form-control\" name=\"password\" placeholder=\"password\">" +
-                            "</div>" +
-                            "<button type=\"submit\" class=\"btn btn-default\">Submit</button>" +
-                            "</form>"
-                        );
-                     }
-            %>
+                     }%>
+                     <%if (!loggedIn) {%>
+                     <c:url value="/j_spring_security_check" var="loginUrl"/>
+                        <form class="navbar-form navbar-left" action="${loginUrl}" method="POST">
+                        <div class="form-group">
+                        <input type="text" class="form-control" name="login" placeholder="login">
+                        <input type="password" class="form-control" name="pass" placeholder="password">
+                        </div>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                        </form>
+                     <%}%>
 
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->

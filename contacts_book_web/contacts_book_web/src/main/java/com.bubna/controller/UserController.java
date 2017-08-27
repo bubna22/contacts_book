@@ -28,23 +28,23 @@ public class UserController {
     private com.bubna.model.Model getUserModel() {
         return (com.bubna.model.Model) applicationContext.getBean("userModel");
     }
-
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String loginPost(
-            @RequestParam(value = "login") String login,
-            @RequestParam(value = "pass") String pass,
-            @CookieValue(value = "JSESSIONID") String sessionId,
-            HttpServletResponse response) {
-        User user = (User) applicationContext.getBean("user");
-        user.setLogin(login);
-        user.setPass(pass);
-        user.setIp("1");
-        com.bubna.model.Model userModel = getUserModel();
-        Command cmd = userModel.getCommand("login");
-        cmd.addInput("user", user);
-        if (!userModel.executeCommand(cmd).equals(Boolean.TRUE)) return "redirect:/";
-        response.addCookie(new Cookie("user", login));
-        return "redirect:/contacts";
-    }
+//
+//    @RequestMapping(value = "/login", method = RequestMethod.POST)
+//    public String loginPost(
+//            @RequestParam(value = "login") String login,
+//            @RequestParam(value = "pass") String pass,
+//            @CookieValue(value = "JSESSIONID") String sessionId,
+//            HttpServletResponse response) {
+//        User user = (User) applicationContext.getBean("user");
+//        user.setLogin(login);
+//        user.setPass(pass);
+//        user.setIp("1");
+//        com.bubna.model.Model userModel = getUserModel();
+//        Command cmd = userModel.getCommand("login");
+//        cmd.addInput("user", user);
+//        if (!userModel.executeCommand(cmd).equals(Boolean.TRUE)) return "redirect:/";
+//        response.addCookie(new Cookie("user", login));
+//        return "redirect:/contacts";
+//    }
 
 }

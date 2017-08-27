@@ -23,7 +23,7 @@ public class Contact extends EntityAncestor {
     private String skype;
     @Column(name = "contact_telegram")
     private String telegram;
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinColumn(name = "group_id")
     private Group group;
 

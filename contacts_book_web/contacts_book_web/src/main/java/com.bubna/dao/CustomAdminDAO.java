@@ -1,43 +1,35 @@
 package com.bubna.dao;
 
 import com.bubna.exception.CustomException;
-import org.hibernate.Session;
-import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class CustomAdminDAO implements AdminDAO {
-
-    private Session session;
+    @PersistenceContext
+    EntityManager entityManager;
     @Autowired
     private ApplicationContext applicationContext;
 
     CustomAdminDAO() {
     }
 
-    @Override
-    public void prepare() throws CustomException {
-        session = (Session) applicationContext.getBean("session");
-    }
-
-    @Override
-    public void close() throws CustomException {
-        if (session != null && session.isOpen()) session.close();
-    }
-
-    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    @Transactional
     public BigInteger userCount() throws CustomException {
-        NativeQuery nq = session.createSQLQuery("SELECT * FROM users_count;");
+        Query nq = entityManager.createNativeQuery("SELECT * FROM users_count");
         return (BigInteger) nq.getSingleResult();
     }
 
-    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    @Transactional
     public ArrayList<String> userContactsCount() throws CustomException {
-        NativeQuery nq = session.createSQLQuery("SELECT * FROM user_contacts_count;");
+        Query nq = entityManager.createNativeQuery("SELECT * FROM user_contacts_count");
         ArrayList<Object[]> list = (ArrayList<Object[]>) nq.getResultList();
         ArrayList<String> dataReturned = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -47,9 +39,9 @@ public class CustomAdminDAO implements AdminDAO {
         return dataReturned;
     }
 
-    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    @Transactional
     public ArrayList<String> userGroupsCount() throws CustomException {
-        NativeQuery nq = session.createSQLQuery("SELECT * FROM user_groups_count;");
+        Query nq = entityManager.createNativeQuery("SELECT * FROM user_groups_count");
         ArrayList<Object[]> list = (ArrayList<Object[]>) nq.getResultList();
         ArrayList<String> dataReturned = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -59,21 +51,21 @@ public class CustomAdminDAO implements AdminDAO {
         return dataReturned;
     }
 
-    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    @Transactional
     public BigDecimal userAVGGroupsCount() throws CustomException {
-        NativeQuery nq = session.createSQLQuery("SELECT * FROM avg_users_in_group_count;");
+        Query nq = entityManager.createNativeQuery("SELECT * FROM avg_users_in_group_count");
         return (BigDecimal) nq.getSingleResult();
     }
 
-    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    @Transactional
     public BigDecimal userAVGContactsCount() throws CustomException {
-        NativeQuery nq = session.createSQLQuery("SELECT * FROM avg_contacts_by_user_count;");
+        Query nq = entityManager.createNativeQuery("SELECT * FROM avg_contacts_by_user_count");
         return (BigDecimal) nq.getSingleResult();
     }
 
-    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    @Transactional
     public ArrayList<String> inactiveUsers() throws CustomException {
-        NativeQuery nq = session.createSQLQuery("SELECT * FROM get_inactive_users;");
+        Query nq = entityManager.createNativeQuery("SELECT * FROM get_inactive_users");
         ArrayList<Object[]> list = (ArrayList<Object[]>) nq.getResultList();
         ArrayList<String> dataReturned = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {

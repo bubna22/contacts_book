@@ -25,7 +25,6 @@ public class ModelConfig {
     }
 
     @Bean("userModel")
-    @Scope("application")
     public Model userModel() {
         return new UserModel();
     }

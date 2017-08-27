@@ -1,18 +1,21 @@
 package com.bubna.model;
 
-import com.bubna.dao.cmd.CreateEntityCommand;
-import com.bubna.dao.cmd.ListEntityCommand;
-import com.bubna.dao.cmd.ModifyEntityCommand;
-import com.bubna.dao.cmd.RemoveEntityCommand;
+import com.bubna.dao.cmd.*;
+
+import javax.annotation.PostConstruct;
 
 public class EntityModel extends AbstractModel {
 
     public EntityModel() {
         super();
-        cmds.put("list", new ListEntityCommand("list"));
-        cmds.put("create", new CreateEntityCommand("create"));
-        cmds.put("delete", new RemoveEntityCommand("delete"));
-        cmds.put("modify", new ModifyEntityCommand("modify"));
+    }
+
+    @PostConstruct
+    public void construct() {
+        cmds.put("list", (Command) applicationContext.getBean("listCommand"));
+        cmds.put("create", (Command) applicationContext.getBean("createCommand"));
+        cmds.put("delete", (Command) applicationContext.getBean("deleteCommand"));
+        cmds.put("modify", (Command) applicationContext.getBean("modifyCommand"));
     }
 
 }

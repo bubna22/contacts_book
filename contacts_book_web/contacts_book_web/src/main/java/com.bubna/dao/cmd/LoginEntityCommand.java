@@ -18,17 +18,10 @@ public class LoginEntityCommand extends AbstractEntityCommand {
         super.execute();
         try {
             if (!input.containsKey("user")) throw new CustomException("incorrect input");
-            entityDao.prepare();
             entityDao.update();
             result = Boolean.TRUE;
         } catch (CustomException e) {
             result = e;
-        } finally {
-            try {
-                entityDao.close();
-            } catch (CustomException e) {
-                e.printStackTrace();
-            }
         }
     }
 

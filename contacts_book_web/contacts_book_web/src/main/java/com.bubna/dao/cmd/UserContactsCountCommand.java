@@ -16,16 +16,9 @@ public class UserContactsCountCommand extends AbstractAdminCommand {
     @Override
     public void execute() {
         try {
-            adminDAO.prepare();
             result = adminDAO.userContactsCount();
         } catch (CustomException e) {
             result = e;
-        } finally {
-            try {
-                adminDAO.close();
-            } catch (CustomException e) {
-                e.printStackTrace();
-            }
         }
     }
 

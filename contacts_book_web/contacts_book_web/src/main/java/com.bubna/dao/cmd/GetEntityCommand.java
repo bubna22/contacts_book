@@ -2,21 +2,23 @@ package com.bubna.dao.cmd;
 
 import com.bubna.exception.CustomException;
 
-public class InactiveUsersCommand extends AbstractAdminCommand {
+public class GetEntityCommand extends AbstractEntityCommand {
 
-    public InactiveUsersCommand(String id) {
+    public GetEntityCommand(String id) {
         super(id);
     }
 
     @Override
     public synchronized Command safeCopy() {
-        return new InactiveUsersCommand(this.id);
+        return new GetEntityCommand(this.id);
     }
 
     @Override
     public void execute() {
+        super.execute();
         try {
-            result = adminDAO.inactiveUsers();
+            if (!input.containsKey("user")) throw new CustomException("incorrect input");
+            result = entityDao.get();
         } catch (CustomException e) {
             result = e;
         }

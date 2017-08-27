@@ -16,17 +16,17 @@ public class AdminModel implements Model {
 
     public AdminModel() {
         cmds = new HashMap<>();
-        cmds.put("count", new UserCountCommand("count"));
-        cmds.put("userContactsCount", new UserContactsCountCommand("userContactsCount"));
-        cmds.put("userGroupsCount", new UserGroupsCountCommand("userGroupsCount"));
-        cmds.put("userGroupsAVGCount", new UserGroupsAVGCountCommand("userGroupsAVGCount"));
-        cmds.put("userContactsAVGCount", new UserContactsAVGCountCommand("userContactsAVGCount"));
-        cmds.put("inactiveUsers", new InactiveUsersCommand("inactiveUsers"));
     }
 
     @PostConstruct
     private void construct() {
         this.adminDAO = (AdminDAO) applicationContext.getBean("adminDAO");
+        cmds.put("count", (Command) applicationContext.getBean("userCountCommand"));
+        cmds.put("userContactsCount", (Command) applicationContext.getBean("userContactsCountCommand"));
+        cmds.put("userGroupsCount", (Command) applicationContext.getBean("userGroupsCountCommand"));
+        cmds.put("userGroupsAVGCount", (Command) applicationContext.getBean("userGroupsAVGCountCommand"));
+        cmds.put("userContactsAVGCount", (Command) applicationContext.getBean("userContactsAVGCountCommand"));
+        cmds.put("inactiveUsers", (Command) applicationContext.getBean("inactiveUsersCommand"));
     }
 
     @Override

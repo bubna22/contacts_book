@@ -1,17 +1,21 @@
 package com.bubna.dao;
 
 import com.bubna.exception.CustomException;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Collection;
 import java.util.HashMap;
 
+@Repository
 abstract class AbstractEntityDAO<V> implements EntityDAO<V> {
-
-    Session session;
+    @PersistenceContext
+    @Autowired
+    EntityManager entityManager;
     HashMap<String, Object> extraData;
     @Autowired
     ApplicationContext applicationContext;
@@ -26,29 +30,23 @@ abstract class AbstractEntityDAO<V> implements EntityDAO<V> {
     }
 
     @Override
-    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    @Transactional
     public void create() throws CustomException {}
 
     @Override
-    @Transactional(value = Transactional.TxType.REQUIRES_NEW, rollbackOn = Exception.class)
+    @Transactional
     public void update() throws CustomException {}
 
     @Override
-    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    @Transactional
     public void delete() throws CustomException {}
 
     @Override
-    @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = Exception.class)
+    @Transactional
+    public V get() throws CustomException {return null;}
+
+    @Override
+    @Transactional
     public Collection<V> list() throws CustomException {return null;}
 
-    @Override
-    public void prepare() throws CustomException {
-        session = (Session) applicationContext.getBean("session");
-    }
-
-    @Override
-    public void close() throws CustomException {
-        extraData.clear();
-        if (session != null && session.isOpen()) session.close();
-    }
 }

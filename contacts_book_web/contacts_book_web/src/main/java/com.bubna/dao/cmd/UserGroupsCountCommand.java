@@ -16,16 +16,9 @@ public class UserGroupsCountCommand extends AbstractAdminCommand {
     @Override
     public void execute() {
         try {
-            adminDAO.prepare();
             result = adminDAO.userGroupsCount();
         } catch (CustomException e) {
             result = e;
-        } finally {
-            try {
-                adminDAO.close();
-            } catch (CustomException e) {
-                e.printStackTrace();
-            }
         }
     }
 

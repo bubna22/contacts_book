@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.annotation.ServletSecurity;
+import java.security.Principal;
 import java.util.ArrayList;
 
 @Controller
@@ -28,9 +30,9 @@ public class ContactController {
     }
 
     @RequestMapping(value = "/contacts", method = RequestMethod.GET)
-    public String contactsGet(@CookieValue(value = "user") String userName, Model model) {
+    public String contactsGet(Principal principal, Model model) {
         User user = (User) applicationContext.getBean("user");
-        user.setLogin(userName);
+        user.setLogin(principal.getName());
         com.bubna.model.Model contactModel = getContactModel();
         Command cmd = contactModel.getCommand("list");
         cmd.addInput("user", user);
@@ -49,10 +51,9 @@ public class ContactController {
             @RequestParam(value = "c_num", required = false) Integer num,
             @RequestParam(value = "c_telegram", required = false) String telegram,
             @RequestParam(value = "g_name", required = false) String groupName,
-            @CookieValue(value = "user") String userName,
-            Model model) {
+            Principal principal, Model model) throws Exception {
         User user = (User) applicationContext.getBean("user");
-        user.setLogin(userName);
+        user.setLogin(principal.getName());
         Contact contact = (Contact) applicationContext.getBean("contact");
         contact.setName(name);
         contact.setEmail(email);
@@ -66,8 +67,8 @@ public class ContactController {
         Command cmd = contactModel.getCommand(action);
         cmd.addInput("user", user);
         cmd.addInput("entity", contact);
-        contactModel.executeCommand(cmd);
-//        if (!contactModel.executeCommand(cmd).equals(Boolean.TRUE)) return "redirect:/";
+//        throw (Exception) contactModel.executeCommand(cmd);
+        if (!contactModel.executeCommand(cmd).equals(Boolean.TRUE)) return "redirect:/main";
         return "redirect:/contacts";
     }
 

@@ -9,6 +9,7 @@ public class UserModel extends AbstractModel {
     public UserModel() {
         cmds.put("login", new LoginEntityCommand("login"));
         cmds.put("unlogin", new UnloginEntityCommand("unlogin"));
+        cmds.put("get", new GetEntityCommand("get"));
     }
 
     @PostConstruct

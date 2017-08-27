@@ -20,16 +20,9 @@ public class ListEntityCommand extends AbstractEntityCommand {
         super.execute();
         try {
             if (!input.containsKey("user")) throw new CustomException("incorrect input");
-            entityDao.prepare();
             result = entityDao.list();
         } catch (CustomException e) {
             result = e;
-        } finally {
-            try {
-                entityDao.close();
-            } catch (CustomException e) {
-                e.printStackTrace();//TODO: err service
-            }
         }
     }
 
